@@ -11,6 +11,8 @@
  * @return void
  */
 define('UPLOADS_DIR', site_url().'/wp-content/uploads');
+$secret_key = defined('TAMLAND_PURCHASE_SECTRET_KEY') ? TAMLAND_PURCHASE_SECTRET_KEY : '';
+
 add_theme_support( 'widgets' );
  
 function hello_elementor_child_enqueue_scripts() {
@@ -711,7 +713,7 @@ endif;
 }
 add_shortcode('live_courses_page', 'live_courses_page_func');
 
-add_action('wp_head','add_analytics_script');
+//add_action('wp_head','add_analytics_script');
 function add_analytics_script(){
     ?>
    <!-- Google tag (gtag.js) -->
@@ -2558,6 +2560,7 @@ function add_to_cart_button_course_func($atts){
             }
         }
     }
+    $token = hash_hmac('sha256', $course_id_lms . '|' . $items[0]["price"], $secret_key);
     ?>
     <form method="post" action="<?php echo $checkout_page_url; ?>">
         <?php
@@ -2603,6 +2606,12 @@ if($button_atts['is_archive'] == true){
         }
         ?>
         <input type="hidden" name="course_numbers" value="<?php echo count($items); ?>">
+        <input type="hidden" name="utm_source" value="<?php echo htmlspecialchars($_GET['utm_source'] ?? ''); ?>">
+        <input type="hidden" name="utm_medium" value="<?php echo htmlspecialchars($_GET['utm_medium'] ?? ''); ?>">
+        <input type="hidden" name="utm_campaign" value="<?php echo htmlspecialchars($_GET['utm_campaign'] ?? ''); ?>">
+        <input type="hidden" name="utm_term" value="<?php echo htmlspecialchars($_GET['utm_term'] ?? ''); ?>">
+        <input type="hidden" name="utm_content" value="<?php echo htmlspecialchars($_GET['utm_content'] ?? ''); ?>">
+        <input type="hidden" name="secure_token" value="<?= $token ?>">
     </form>
     <?php
 }
@@ -2964,19 +2973,40 @@ function show_selected_grade_of_course() {
     }
 
     return '<div class="parent-grade-container">
-                <a href="' . esc_url(get_term_link($final_grade)) . '" class="custom-grade-btn">'
+                <a href="' . esc_url(get_permalink($post)) . '" class="custom-grade-btn">'
                 . esc_html($final_grade->name) . 
                 '</a>
             </div>';
 }
 add_shortcode('show_grade', 'show_selected_grade_of_course');
 
+<<<<<<< HEAD
 //کد های مربوط به سرعت سایت 
 
 if (!is_user_logged_in()) {
     header("Cache-Control: public, max-age=86400");
 }
 
+=======
+
+
+//کد های مربوط به سرعت سایت 
+
+add_action('send_headers', function () {
+    if (!is_user_logged_in() && !is_admin() && !defined('DOING_AJAX') && !defined('REST_REQUEST')) {
+
+        $uri = $_SERVER['REQUEST_URI'];
+
+
+        if (preg_match('#^/first-session-video/#', $uri)) {
+            header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+            header("Pragma: no-cache");
+        } else {
+            header("Cache-Control: public, max-age=86400");
+        }
+    }
+}, 1); 
+>>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 remove_action('wp_head', 'rsd_link');
 remove_action('wp_head', 'wlwmanifest_link');
@@ -2990,7 +3020,18 @@ remove_action('admin_print_styles', 'print_emoji_styles');
 add_filter('the_generator', '__return_empty_string');
 
 
+<<<<<<< HEAD
 add_filter('heartbeat_send', '__return_false');
+=======
+add_filter('heartbeat_send', function($response, $screen_id) {
+    if (!is_admin()) {
+        return false;
+    }
+    return $response;
+}, 10, 2);
+
+
+>>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 function disable_feed() { wp_die(__('No feed available.', 'textdomain')); }
 add_action('do_feed', 'disable_feed', 1);
 add_action('do_feed_rdf', 'disable_feed', 1);
@@ -3024,6 +3065,7 @@ add_action('init', function() {
     });
 }, 9999);
 
+<<<<<<< HEAD
 
 add_filter('gform_disable_css', '__return_true');
 add_filter('gform_disable_js', '__return_true');
@@ -3032,11 +3074,16 @@ add_filter('gform_disable_js', '__return_true');
 add_action('wp_head', function () {
     echo '
 
+=======
+add_action('wp_head', function () {
+    echo '
+>>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
+<<<<<<< HEAD
 
     <link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/plugins/happy-elementor-addons/assets/fonts/huge-icons/huge-icons.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/plugins/happy-elementor-addons/assets/fonts/happy-icons.woff2" as="font" type="font/woff2" crossorigin>
@@ -3050,10 +3097,25 @@ add_action('wp_head', function () {
     <link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_Medium.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_Bold.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb.ttf" as="font" type="font/ttf" crossorigin>
+=======
+    <link rel="preload" href="/wp-content/plugins/happy-elementor-addons/assets/fonts/huge-icons/huge-icons.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/wp-content/plugins/happy-elementor-addons/assets/fonts/happy-icons.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWebFaNum.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWebFaNum_Bold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2024/05/Morabba-Bold.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWeb_UltraLight.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWeb_Light.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWeb_Medium.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWeb_Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/wp-content/uploads/2022/09/IRANSansWeb.ttf" as="font" type="font/ttf" crossorigin>
+>>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
     ';
 });
 
 
+<<<<<<< HEAD
 if (!is_admin() && !is_user_logged_in()) {
     ob_start(function($html) {
         return preg_replace('/\s+/', ' ', $html);
@@ -3080,3 +3142,387 @@ add_action('wp_footer', function () {
   <?php
 });
 
+=======
+if (!is_admin() && !is_user_logged_in() && !defined('DOING_AJAX') && !defined('REST_REQUEST')) {
+    $uri = $_SERVER['REQUEST_URI'];
+    if (!preg_match('#^/first-session-video/#', $uri)) {
+        ob_start(function($html) {
+            return preg_replace('/\s+/', ' ', $html);
+        });
+    }
+}
+
+
+
+add_action('wp_footer', function () {
+    ?>
+    <script>
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const goftino = document.createElement('script');
+            goftino.src = 'https://www.goftino.com/widget/kkkIbA';
+            goftino.defer = true;
+            document.body.appendChild(goftino);
+        }, 1500);
+    });
+    </script>
+    <?php
+});
+
+
+// ****************** بهینه‌سازی اختصاصی نسخه موبایل ******************
+if (!is_user_logged_in()) {
+    header("Cache-Control: public, max-age=86400");
+ }
+// function optimize_mobile_scripts() {
+//     if ( wp_is_mobile() ) {
+
+
+//         wp_dequeue_script('jquery');
+//         wp_dequeue_script('jquery-migrate');
+//         wp_dequeue_script('ovenplayer');
+//         wp_dequeue_script('clarity');
+//         wp_dequeue_script('gtag-js');
+//         wp_dequeue_script('goftino-js');
+//         wp_dequeue_script('hls-js');
+//         wp_dequeue_script('swiper');
+//         wp_dequeue_script('slick');
+//         wp_dequeue_script('elementor-frontend');
+
+
+//         wp_deregister_script('wp-embed');
+//     }
+// }
+// add_action('wp_enqueue_scripts', 'optimize_mobile_scripts', 999);
+
+function detect_low_speed_mobile() {
+    if (wp_is_mobile()) {
+        echo "
+        <script>
+        if (navigator.connection && (navigator.connection.saveData || 
+            navigator.connection.effectiveType === '2g' || 
+            navigator.connection.effectiveType === '3g')) {
+            document.documentElement.classList.add('low-speed');
+        }
+        </script>
+        ";
+    }
+}
+add_action('wp_head', 'detect_low_speed_mobile', 1);
+
+remove_action('wp_head', 'print_emoji_detection_script', 7);
+remove_action('wp_print_styles', 'print_emoji_styles');
+
+
+function remove_jquery_migrate_mobile( $scripts ) {
+    if ( wp_is_mobile() && isset( $scripts->registered['jquery'] ) ) {
+        $scripts->registered['jquery']->deps = array_diff( $scripts->registered['jquery']->deps, array('jquery-migrate') );
+    }
+}
+add_action('wp_default_scripts', 'remove_jquery_migrate_mobile');
+
+
+function add_lazy_loading_to_images($content){
+    return str_replace('<img', '<img loading="lazy"', $content);
+}
+add_filter('the_content', 'add_lazy_loading_to_images');
+
+
+function defer_heavy_css_mobile() {
+    if ( wp_is_mobile() ) {
+        ?>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!document.documentElement.classList.contains('low-speed')) {
+                var l = document.createElement("link");
+                l.rel = "stylesheet";
+                l.href = "<?php echo get_stylesheet_directory_uri(); ?>/css/f6d8294.css?ver=df3e2";
+                l.media = "print";
+                l.onload = function() { this.media = "all"; };
+                document.head.appendChild(l);
+            }
+        });
+        </script>
+        <noscript>
+            <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/css/f6d8294.css?ver=df3e2" />
+        </noscript>
+        <?php
+    }
+}
+add_action('wp_footer', 'defer_heavy_css_mobile');
+
+
+function defer_google_fonts_mobile() {
+    if ( wp_is_mobile() ) {
+        ?>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!document.documentElement.classList.contains('low-speed')) {
+                var gf = document.createElement("link");
+                gf.rel = "stylesheet";
+                gf.href = "https://fonts.googleapis.com/css2?family=IRANSans&display=swap";
+                gf.media = "print";
+                gf.onload = function() { this.media = "all"; };
+                document.head.appendChild(gf);
+            }
+        });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer', 'defer_google_fonts_mobile');
+
+function defer_iframes_mobile($content) {
+    if (wp_is_mobile() && !is_admin()) {
+        $content = preg_replace_callback('/<iframe([^>]*)><\/iframe>/i', function ($matches) {
+            $attrs = $matches[1];
+            return '<iframe loading="lazy"' . $attrs . '></iframe>';
+        }, $content);
+    }
+    return $content;
+}
+add_filter('the_content', 'defer_iframes_mobile', 99);
+
+add_action('wp_head', function () {
+    if (wp_is_mobile()) {
+        echo '<link rel="preload" as="image" href="https://tizhooshan.tamland.ir/wp-content/uploads/2025/05/%D9%87%D9%85%D8%A7%DB%8C%D8%B4-%D8%AC%D9%85%D8%B9-%D8%A8%D9%86%D8%AF%DB%8C-%D8%AA%DB%8C%D8%B2%D9%87%D9%88%D8%B4%D8%A7%D9%86.webp" fetchpriority="high">';
+    }
+}, 1);
+
+
+function remove_unused_css_inline() {
+    if (wp_is_mobile()) {
+        echo '<style>body *:not(:first-child){display:none!important;}</style>';
+    }
+}
+
+
+//loading
+
+
+function is_known_bot() {
+    if (!isset($_SERVER['HTTP_USER_AGENT'])) return false;
+    $bots = [
+        'Googlebot', 'Bingbot', 'Slurp', 'DuckDuckBot', 'YandexBot',
+        'facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'WhatsApp', 'TelegramBot'
+    ];
+    foreach ($bots as $bot) {
+        if (stripos($_SERVER['HTTP_USER_AGENT'], $bot) !== false) return true;
+    }
+    return false;
+}
+
+
+function enqueue_universal_lazyload_script() {
+    if (is_admin() || is_known_bot()) return;
+    ?>
+    <style>
+        .lazy-section-placeholder {
+            background: #f0f0f0;
+            margin: 1rem 0;
+            display: block;
+        }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const lazyElements = document.querySelectorAll('[class*="lazy-"], .hero-section');
+
+        lazyElements.forEach(el => {
+
+            const style = window.getComputedStyle(el);
+
+            const placeholder = document.createElement('div');
+            placeholder.className = 'lazy-section-placeholder';
+            placeholder.style.height = el.offsetHeight + 'px';
+            placeholder.style.width = el.offsetWidth + 'px';
+            placeholder.style.marginTop = style.marginTop;
+            placeholder.style.marginBottom = style.marginBottom;
+            placeholder.style.marginLeft = style.marginLeft;
+            placeholder.style.marginRight = style.marginRight;
+            placeholder.style.paddingTop = style.paddingTop;
+            placeholder.style.paddingBottom = style.paddingBottom;
+            placeholder.style.paddingLeft = style.paddingLeft;
+            placeholder.style.paddingRight = style.paddingRight;
+            placeholder.style.boxSizing = style.boxSizing;
+
+            el.style.display = 'none';
+            el.parentNode.insertBefore(placeholder, el);
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        el.style.display = '';
+                        placeholder.remove();
+                        obs.unobserve(el);
+                    }
+                });
+            }, { rootMargin: '0px 0px 200px 0px', threshold: 0.1 });
+
+            observer.observe(placeholder);
+        });
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'enqueue_universal_lazyload_script', 100);
+
+function enqueue_mobile_only_lazyload_script() {
+    if (is_admin() || is_known_bot()) return;
+    ?>
+    <style>
+        .lazy-section-placeholder {
+            background: #f0f0f0;
+            margin: 1rem 0;
+            display: block;
+        }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // فقط موبایل
+        if (!/Mobi|Android/i.test(navigator.userAgent)) return;
+
+        const lazyElements = document.querySelectorAll('[class*="lazy-"], .hero-section');
+
+        lazyElements.forEach(el => {
+            const style = window.getComputedStyle(el);
+
+            const placeholder = document.createElement('div');
+            placeholder.className = 'lazy-section-placeholder';
+            placeholder.style.height = el.offsetHeight + 'px';
+            placeholder.style.width = el.offsetWidth + 'px';
+            placeholder.style.marginTop = style.marginTop;
+            placeholder.style.marginBottom = style.marginBottom;
+            placeholder.style.marginLeft = style.marginLeft;
+            placeholder.style.marginRight = style.marginRight;
+            placeholder.style.paddingTop = style.paddingTop;
+            placeholder.style.paddingBottom = style.paddingBottom;
+            placeholder.style.paddingLeft = style.paddingLeft;
+            placeholder.style.paddingRight = style.paddingRight;
+            placeholder.style.boxSizing = style.boxSizing;
+
+            el.style.display = 'none';
+            el.parentNode.insertBefore(placeholder, el);
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        el.style.display = '';
+                        placeholder.remove();
+                        obs.unobserve(el);
+                    }
+                });
+            }, { rootMargin: '0px 0px 200px 0px', threshold: 0.1 });
+
+            observer.observe(placeholder);
+        });
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'enqueue_mobile_only_lazyload_script', 100);
+
+
+//loading end
+
+function add_elementor_responsive_js() {
+    ?>
+    <script>
+    (function() {
+        function getDevice() {
+            var w = window.innerWidth;
+            if (w >= 1025) return 'desktop';
+            if (w >= 768) return 'tablet';
+            return 'phone';
+        }
+
+        function removeHiddenElements() {
+            var device = getDevice();
+            var classMap = {
+                desktop: 'elementor-hidden-desktop',
+                tablet: 'elementor-hidden-tablet',
+                phone: 'elementor-hidden-phone'
+            };
+            var hiddenClass = classMap[device];
+            if (!hiddenClass) return;
+
+            var elems = document.querySelectorAll('.' + hiddenClass);
+            elems.forEach(function(el) {
+                if (el && el.parentNode) {
+                    el.parentNode.removeChild(el);
+                }
+            });
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            removeHiddenElements();
+        } else {
+            window.addEventListener('DOMContentLoaded', removeHiddenElements);
+        }
+    })();
+    </script>
+    <?php
+}
+add_action('wp_footer', 'add_elementor_responsive_js');
+
+
+// تابع اصلی برای گرفتن پست تبلیغاتی مرتبط
+function get_current_related_ad_post() {
+    if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
+    if (function_exists('nocache_headers')) nocache_headers();
+
+    static $ad_post = null;
+
+    if ($ad_post !== null) {
+        return $ad_post;
+    }
+
+    $post_id = get_the_ID();
+    if (!$post_id) return null;
+
+    $terms_field = wp_get_post_terms($post_id, 'lesson', ['fields' => 'ids']);
+    $terms_grade = wp_get_post_terms($post_id, 'grade', ['fields' => 'ids']);
+
+    if (empty($terms_field) && empty($terms_grade)) {
+        return null;
+    }
+
+    $args = [
+        'post_type' => 'ads',
+        'posts_per_page' => 1,
+        'orderby' => 'rand',
+        'tax_query' => [
+            'relation' => 'OR',
+            [
+                'taxonomy' => 'lesson',
+                'field' => 'term_id',
+                'terms' => $terms_field,
+            ],
+            [
+                'taxonomy' => 'grade',
+                'field' => 'term_id',
+                'terms' => $terms_grade,
+            ]
+        ]
+    ];
+
+    $ads = get_posts($args);
+    $ad_post = !empty($ads) ? $ads[0] : null;
+    return $ad_post;
+}
+
+// شورتکد برای لینک ویدیو تبلیغاتی
+function get_related_ad_video_func() {
+    $ad_post = get_current_related_ad_post();
+    $video_url = $ad_post ? get_post_meta($ad_post->ID, 'ad_video', true) : '';
+    return esc_url($video_url ?: '');
+}
+add_shortcode('get_related_ad_video', 'get_related_ad_video_func');
+
+// شورتکد برای لینک صفحه تبلیغاتی
+function get_related_ad_page_link_func() {
+    $ad_post = get_current_related_ad_post();
+    $page_link = $ad_post ? get_post_meta($ad_post->ID, 'ad_link', true) : '';
+    return esc_url($page_link ?: '#');
+}
+add_shortcode('get_related_ad_link', 'get_related_ad_page_link_func');
+>>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
