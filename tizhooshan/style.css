@@ -289,6 +289,17 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
     width:160px;
     height:160px;
 }
+
+
+@media only screen and (max-width: 767px) {
+
+div#courseRow-3 {
+    padding: 0px !important;
+
+}
+}
+
+
 .multiteacher-courses-items .course-teacher-img{
     display:flex;
     align-items:start;
@@ -341,6 +352,16 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
     font-size:18px;
     font-weight:bold;
 }
+
+@media only screen and (max-width: 767px) {
+  .courses-title h3 {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 35px !important;
+  }
+}
+
+
 .first-session-play-icon{
     cursor:pointer;
     position: absolute;
@@ -416,8 +437,8 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
 /* Start Css code for video BY mehran saeedi */
 
 @media (max-width: 480px) {
-    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
-        height: 138px !important; 
+    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
+        height: 138px !important; 
 			
 }
 	.elementor-9150 .elementor-element.elementor-element-deb2c1b .h_iframe-aparat_embed_frame iframe{
@@ -428,9 +449,9 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
-        height: 138px !important; 
-    }
+    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
+        height: 138px !important; 
+    }
 		.elementor-9150 .elementor-element.elementor-element-deb2c1b .h_iframe-aparat_embed_frame iframe{
 		
 		height:138px !important;
@@ -439,9 +460,9 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
-        height: 118px !important; 
-    }
+    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
+        height: 118px !important; 
+    }
 		.elementor-9150 .elementor-element.elementor-element-deb2c1b .h_iframe-aparat_embed_frame iframe{
 		
 		height:118px !important;
@@ -450,9 +471,9 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
 }
 
 @media (min-width: 1025px) and (max-width: 1440px) {
-    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
-        height: 146px !important; 
-    }
+    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
+        height: 146px !important; 
+    }
 		.elementor-9150 .elementor-element.elementor-element-deb2c1b .h_iframe-aparat_embed_frame iframe{
 		
 		height:146px !important;
@@ -462,9 +483,9 @@ nav.elementor-nav-menu--dropdown ul li.menu-item a.has-submenu{
 
 
 @media (min-width: 1441px) {
-    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
-        height: 146px !important; 
-    }
+    .elementor-8342 .elementor-element.elementor-element-5c2da8e .h_iframe-aparat_embed_frame iframe {
+        height: 146px !important; 
+    }
 		.elementor-9150 .elementor-element.elementor-element-deb2c1b .h_iframe-aparat_embed_frame iframe{
 		
 		height:146px !important;
@@ -549,4 +570,10 @@ div#post-video-links {
     transform: translateY(10px);
     transition: opacity 0.3s ease-out, transform 0.3s ease-out;
     will-change: opacity, transform;
+}
+
+.courses-title  {
+font-size: 14px !important;
+font-weight: 700 !important;   
+line-height: 35px !important; 
 }
