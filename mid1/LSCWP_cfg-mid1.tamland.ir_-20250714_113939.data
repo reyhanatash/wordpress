@@ -52,7 +52,7 @@
 
 ["cache-priv_uri",[]]
 
-["cache-exc",[]]
+["cache-exc",["\/first-session-video\/%D8%AA%D8%B3%D8%AA-%D9%BE%D9%84%DB%8C%D8%B1\/","\/first-session-video\/","\/first-session-video"]]
 
 ["cache-exc_roles",["administrator"]]
 
@@ -158,17 +158,17 @@
 
 ["optm-ucss_whitelist",[]]
 
-["optm-ucss_file_exc_inline",[]]
+["optm-ucss_file_exc_inline",["https:\/\/mid1.tamland.ir\/wp-content\/litespeed\/css\/43508b9ced1409966076c61a3759a849.css"]]
 
 ["optm-ucss_exc",[]]
 
-["optm-css_exc",[]]
+["optm-css_exc",["https:\/\/mid1.tamland.ir\/wp-content\/litespeed\/css\/43508b9ced1409966076c61a3759a849.css"]]
 
 ["optm-js_min",true]
 
 ["optm-js_comb",false]
 
-["optm-js_comb_ext_inl",false]
+["optm-js_comb_ext_inl",true]
 
 ["optm-js_delay_inc",[]]
 
@@ -204,7 +204,7 @@
 
 ["optm-ggfonts_async",true]
 
-["optm-exc_roles",["administrator"]]
+["optm-exc_roles",[]]
 
 ["optm-ccss_con",""]
 
@@ -234,7 +234,7 @@
 
 ["object-persistent",true]
 
-["object-admin",false]
+["object-admin",true]
 
 ["object-transients",false]
 

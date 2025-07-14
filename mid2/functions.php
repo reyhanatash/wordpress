@@ -11,18 +11,11 @@
  * @return void
  */
 define('UPLOADS_DIR', site_url().'/wp-content/uploads');
+
 $secret_key = defined('TAMLAND_PURCHASE_SECTRET_KEY') ? TAMLAND_PURCHASE_SECTRET_KEY : '';
 
-
-add_theme_support( 'widgets' );
-
- function use_wp_default_jquery_footer() {
-    wp_deregister_script('jquery');
-    wp_register_script('jquery', get_stylesheet_directory_uri().'/assets/js/jquery-3.7.1.min.js', array(), null, false); // true = load in footer
-    wp_enqueue_script('jquery');
-}
-//add_action('wp_enqueue_scripts', 'use_wp_default_jquery_footer');
-
+ add_theme_support( 'widgets' );
+ 
 function hello_elementor_child_enqueue_scripts() {
     wp_enqueue_style( 'bootstrap', get_stylesheet_directory_uri(). '/assets/css/bootstrap.min.css' );
     wp_enqueue_style( 'bootstrap-rtl', get_stylesheet_directory_uri(). '/assets/css/bootstrap.rtl.min.css' );
@@ -37,74 +30,16 @@ function hello_elementor_child_enqueue_scripts() {
 		[
 			'hello-elementor-theme-style',
 		],
-		'1.4.1'
+		'1.3.0'
 	);
 	
 	wp_enqueue_script( 'bootstrap', get_stylesheet_directory_uri(). '/assets/js/bootstrap.min.js' , array(), '5.2.0', true );
 	wp_enqueue_script( 'owl-carousel', get_stylesheet_directory_uri(). '/assets/js/owl.carousel.min.js' , array(), '1.0.0', true );
 	wp_enqueue_script( 'kc-fab', get_stylesheet_directory_uri(). '/assets/js/kc.fab.min.js' , array(), '', true );
-	wp_enqueue_script( 'java', get_stylesheet_directory_uri(). '/assets/js/java.js' , array(), '1.5.28', true );
+	wp_enqueue_script( 'java', get_stylesheet_directory_uri(). '/assets/js/java.js' , array(), '1.6.1', true );
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_child_enqueue_scripts', 20 );
 
-add_action('wp_enqueue_scripts', 'remove_unwanted_assets_on_specific_page', 100);
-function remove_unwanted_assets_on_specific_page() {
-    // Check if it's the page with slug "about-us"
-    if (is_page('course-checkout') || is_page('return-payment-gateway')) {
-        // Remove styles
-        //wp_dequeue_style('elementor-icons-shared-1');
-        //wp_deregister_style('elementor-icons-shared-1');
-        wp_dequeue_style('eael-general');
-        wp_deregister_style('eael-general');
-        wp_dequeue_style('owl-carousel');
-        wp_deregister_style('owl-carousel');
-        wp_dequeue_style('happy-icons');
-        wp_deregister_style('happy-icons');
-        wp_dequeue_style('font-awesome');
-        wp_deregister_style('font-awesome');
-        wp_dequeue_style('e-popup');
-        wp_deregister_style('e-popup');
-        wp_dequeue_style('jet-engine-frontend');
-        wp_deregister_style('jet-engine-frontend');
-        wp_dequeue_style('ep-helper');
-        wp_deregister_style('ep-helper');
-        wp_dequeue_style('bdt-uikit');
-        wp_deregister_style('bdt-uikit');
-        wp_dequeue_style('hello-elementor-header-footer');
-        wp_deregister_style('hello-elementor-header-footer');
-        wp_dequeue_style('kc-fab');
-        wp_deregister_style('kc-fab');
-        wp_dequeue_style('bootstrap-utilities');
-        wp_deregister_style('bootstrap-utilities');
-        wp_dequeue_style('bootstrap-utilities-rtl');
-        wp_deregister_style('bootstrap-utilities-rtl');
-        // Remove scripts
-        wp_dequeue_script('ovenplayer');
-        wp_deregister_script('ovenplayer');
-        wp_dequeue_script('hls');
-        wp_deregister_script('hls');
-        wp_dequeue_script('element-pack-helper');
-        wp_deregister_script('element-pack-helper');
-        wp_dequeue_script('bdt-uikit');
-        wp_deregister_script('bdt-uikit');
-        wp_dequeue_script('eael-general');
-        wp_deregister_script('eael-general');
-        wp_dequeue_script('happy-reading-progress-bar');
-        wp_deregister_script('happy-reading-progress-bar');
-        wp_dequeue_script('happy-addons-pro');
-        wp_deregister_script('happy-addons-pro');
-        wp_dequeue_script('happy-elementor-addons');
-        wp_deregister_script('happy-elementor-addons');
-        wp_dequeue_script('dom-purify');
-        wp_deregister_script('dom-purify');
-        wp_dequeue_script('owl-carousel');
-        wp_deregister_script('owl-carousel');
-        wp_dequeue_script('bootstrap');
-        wp_deregister_script('bootstrap');
-        wp_dequeue_script('kc-fab');
-        wp_deregister_script('kc-fab');
-    }
-}
 
 add_filter( 'woocommerce_sale_flash', 'cssigniter_woocommerce_sale_flash_percentage', 10, 3 );
 /**
@@ -126,104 +61,299 @@ add_filter('wp_editor_set_quality', function($arg){return 100;});
 
 
 // ** Get Live Courses from API and show it with Shortcode ** //
-add_shortcode('Live_Courses', 'Live_Courses_func');
+
 function Live_Courses_func(){
-    $request_url = 'https://api.tamland.ir/api/main/freeClassList/-1/1';
+    $request_url = 'https://api.tamland.ir/api/main/freeClassList/-1/2';
     $curl = curl_init($request_url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
-      'X-TamlandAPI-Host: api.tamland.ir',
-      'Content-Type: application/json'
+    'cache-control: no-cache',
+    'X-TamlandAPI-Host: api.tamland.ir',
+    'Content-Type: application/json',
     ]);
-    $response = json_decode(curl_exec($curl), true);
-    curl_close($curl);
-
-    if(empty($response['data'])){
-        return '<style>#LiveCourseSection{display:none}</style>';
-        //return '<div class="no-online-class"><img src="' . wp_get_upload_dir()['baseurl'] . '/2023/02/7714651.webp" class="mb-5"><div><span>در حال حاضر هیچ کلاس آنلاینی موجود نیست.</span></div></div>';
-    }
-
-    $courses = array_filter($response['data'], function($course) {
-        return $course['fldCourseType'] != '88' && $course['fldCourseType'] != '102';
-    });
-
-    if(empty($courses)){
-        return '<style>#LiveCourseSection{display:none}</style>';
-        //return '<div class="no-online-class"><img src="' . wp_get_upload_dir()['baseurl'] . '/2023/02/7714651.webp" class="mb-5"><div><span>در حال حاضر هیچ کلاس آنلاینی موجود نیست.</span></div></div>';
-    }
-
-    ob_start(); ?>
-
-    <div class="live-course-place">
-        <div class="row mb-5">
-            <div class="col-6 text-right">
-                <h2 class="live-course-title">کلاس‌های در لحظه</h2>
-            </div>
-            <div class="col-6 text-left">
-                <a href="/live/" class="text-white">مشاهده همه <i class="fa fa-angle-left"></i></a>
-            </div>
-        </div>  
-        <div class="live-course-wrapper">
-            <div class="sa-owl-next"><i class="fa fa-angle-right"></i></div>
-            <div class="owl-carousel" id="liveCourse">
-                <?php foreach ($courses as $course): 
-                    $starttime = explode("T", $course['fldShowStartDate']);
-                    $endtime = explode("T", $course['fldShowEndDate']);
-                    $starthour = wp_date('H:i', strtotime($starttime[1]), 'Asia/Tehran');
-                    $endhour = wp_date('H:i', strtotime($endtime[1]), 'Asia/Tehran');
-                    $day = date_i18n('l', strtotime($starttime[0]));
-                ?>
-                    <div class="item-box">
-                        <div class="row">
-                            <div class="col-12 col-lg-6">
-                                <div class="playing">در حال پخش</div>
-                                <div class="course-image">
-                                    <a href="https://lms.tamland.ir/live/<?php echo $course['fldPkCourseStepCo']; ?>">
-                                        <img src="https://stream.tamland.ir/tamland/1402/course/<?php echo esc_attr($course['fldCoursePicAddress']); ?>" alt="">
-                                        <img src="<?php echo UPLOADS_DIR . '/2022/11/play-icon.png'; ?>" alt="" class="play-icon">
-                                    </a>
-                                </div> 
-                            </div>
-                            <div class="col-12 col-lg-6 text-right rtl">
-                                <a href="https://lms.tamland.ir/live/<?php echo esc_attr($course['fldPkCourseStepCo']); ?>">
-                                    <h3 class="course-title"><?php echo esc_html($course['courseName']); ?></h3>
-                                </a>
-                                <p><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/jalase.png" class="live-icon"> <?php echo esc_html($course['courseStepName']); ?></p>
-                                <p><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/presentation-white.png" class="live-icon"> <?php echo esc_html($course['fldTeacherName']); ?></p>
-                                <p><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/clock-white.png" class="live-icon"> <?php echo esc_html($day) . ' ' . esc_html($starthour) . ' الی ' . esc_html($endhour); ?></p>  
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="sa-owl-prev"><i class="fa fa-angle-left"></i></div>
-        </div>
-    </div>
-
-    <script type="text/javascript">
-        jQuery(document).ready(function(){
-            jQuery("#liveCourse").owlCarousel({
-                loop: false,
-                margin: 10,
-                nav: true,
-                responsive: {
-                    0: { items: 1 },
-                    600: { items: 1 },
-                    1000: { items: 1 }
-                }
-            });
-
-            jQuery('.sa-owl-next').click(function(){
-                jQuery('.owl-next').click();
-            });
-            jQuery('.sa-owl-prev').click(function(){
-                jQuery('.owl-prev').click();
-            });
-        });
-    </script>
     
-    <?php return ob_get_clean();
+    $response = json_decode(curl_exec($curl), true);
+    
+    curl_close($curl);
+    
+    $courses = $response['data'];
+
+if(!empty($courses)):
+
+?>
+   <div class="live-course-place">
+         <div class="row mb-5 align-items-center">
+             <div class="col-6 text-right">
+                 <h2 class="live-course-title">کلاس های متوسطه در لحظه</h2>
+             </div>
+             <div class="col-6 text-left">
+                 <a href="/live/" class="text-white">مشاهده همه <i class="fa fa-angle-left"></i></a>
+             </div>
+         </div>  
+        <div class="live-course-wrapper">
+        <div class="sa-owl-next"><i class="fa fa-angle-right"></i></div>
+        
+        <div class="owl-carousel" id="liveCourse">
+  <?php
+    if (!empty($courses)) {
+  
+        foreach ($courses as $course) { ?> 
+        <div>
+           <div class="item-box">
+               <div class="row">
+                   <div class="col-12 col-lg-6">
+                       <div class="playing">در حال پخش</div>
+                       <div class="course-image">
+                            <a href="https://lms.tamland.ir/live/<?php echo $course['fldPkCourseStepCo'];?>">
+                                <img src="https://stream.tamland.ir/tamland/1402/course/<?php echo $course['fldCoursePicAddress']; ?>" alt="">
+                                <img src="<?php echo UPLOADS_DIR.'/2022/11/play-icon.png'; ?>" alt="" class="play-icon">
+                            </a>
+                        </div> 
+                   </div>
+                   <div class="col-12 col-lg-6 text-right rtl">
+                       <?php  echo '<a href="https://lms.tamland.ir/live/' . $course['fldPkCourseStepCo'] . '"> <h3 class="course-title">' . $course['courseName'] . '</h3> </a>'; ?>
+                       <p><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/jalase.png" class="live-icon"> <?php echo $course['courseStepName']; ?></p>
+                       <div>
+                        <p><?php echo '<img src="'.get_stylesheet_directory_uri().'/assets/img/presentation-white.png" class="live-icon">'.$course['fldTeacherName']; ?> </p> 
+                        <?php
+                        // Get Start And End Time
+                        $starttime = $course['fldShowStartDate'];
+                        $starttime = explode("T","$starttime");
+                        $endtime = $course['fldShowEndDate'];
+                        $endtime = explode("T","$endtime");
+                        $starthour = wp_date( 'H:i', strtotime($starttime[1]),  date_default_timezone_get('Asia/Tehran') );
+                        $endhour = wp_date( 'H:i', strtotime($endtime[1]),  date_default_timezone_get('Asia/Tehran') );
+                         
+                        // Get Day Name
+                        $day = date('l', strtotime($starttime[0]));
+                        $day = str_replace("Saturday","شنبه",$day);
+                        $day = str_replace("Sunday","یکشنبه",$day);
+                        $day = str_replace("Monday","دوشنبه",$day);
+                        $day = str_replace("Tuesday","سه‌شنبه",$day);
+                        $day = str_replace("Wednesday","چهارشنبه",$day);
+                        $day = str_replace("Thursday","پنجشنبه",$day);
+                        $day = str_replace("Friday","جمعه",$day);
+                        ?>
+                       </div>
+                       <div>
+                           <p>
+                               <img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/clock-white.png" class="live-icon"> 
+                              <?php echo $day .' '. $starthour . ' الی ' . $endhour; ?>
+                           </p>  
+                       </div>
+                   </div>
+               </div>
+            </div>
+        </div>
+<?php }} ?>
+    </div>
+    <div class="sa-owl-prev"><i class="fa fa-angle-left"></i></div>
+</div>
+</div>
+<style>
+.live-course-place{
+    width:100%;
+    height:auto;
+    margin:Auto;
 }
+h2.live-course-title{
+    color:#fff !important;
+    font-weight:bold !important;
+}
+.live-course-wrapper{
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    flex:1 0 auto;
+    align-items:top;
+    justify-content:space-between;
+}
+.live-course-wrapper .owl-carousel{
+    max-width:812px !important;
+    margin:auto;
+}
+.live-course-wrapper .owl-stage {
+    display:flex;
+    flex-direction:row;
+    align-items:end;
+}
+.playing{
+    width:104px;
+    height:36px;
+    background:url(<?php echo get_stylesheet_directory_uri(). '/assets/img/playing.png' ?>) center center no-repeat;
+    position:absolute;
+    left:20px;
+    top:-5px;
+    font-weight: bold;
+    z-index: 999;
+    text-align: center;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#liveCourse{
+    direction:ltr;
+}
+.owl-nav{display:none;}
+.sa-owl-next,.sa-owl-prev{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:64px;
+    height:64px;
+    color:#fff;
+    background: rgba(255,255,255,0.2);
+    border-radius:50%;
+    font-size:32px;
+    cursor:pointer;
+}
+.item-box {
+  width:100%;
+  display:flex;
+  flex-direction: column;
+  color:#fff;
+}
+.item-box h3{color:#fff;font-size:18px;font-weight:bold;margin-right:0;}
+.live-course-wrapper .owl-stage-outer{
+    padding-top:8px;
+}
+.course-image{position:relative;width:100%;height:307px;border:7px solid #fff;background:#fff;
+  border-radius:20px;overflow:hidden;}
+.course-image img {
+  width:100%;height:auto !important;border-radius:20px;
+}
+.course-image .play-icon {
+  position: absolute;
+    width: 86px !important;
+    height: 86px !important;
+    margin: auto;
+    transition:all 0.3s;
+    left: calc(50% - 43px);
+    z-index: 999;
+    top: calc(50% - 43px);
+
+}
+.course-image:hover .play-icon {
+  width:90px !important;
+    height: 90px !important;
+  left: calc(50% - 45px);
+    top: calc(50% - 45px);
+}
+.course-title {
+  text-align: right;
+  font-size:16px;
+  font-weight:700;
+  margin: 18px 10px;
+  line-height:1.8;
+}
+.course-detail {
+  list-style:none;
+  text-align:right !important;
+  line-height:1.8em;
+  margin: 10px 10px;
+  padding: 0;
+}
+li.detail-item {
+    line-height: 2.3;
+    font-size:14px;
+}
+
+.course-live-row{height:358px;}
+.live-icon{
+    display:inline-block !important;
+    margin-left:7px;
+    width:30px !important; 
+    height:30px !important;
+}
+
+@media(max-width:1000px){
+    .live-course-place{
+        width:100%;
+    }
+    .live-course-wrapper .owl-carousel{
+        width:480px !important;
+        margin:auto;
+    }
+    .sa-owl-next,.sa-owl-prev{display:none;}
+    .course-live-row{height:auto;}
+}
+@media(max-width:480px){
+    .live-course-place{
+        width:100%;
+    }
+    h2.live-course-title{font-size:14px !important;}
+    .live-course-wrapper .owl-carousel{
+        width:100% !important;
+    }
+    .sa-owl-next,.sa-owl-prev{display:none;}
+    .course-live-row{height:auto;}
+    .course-title{font-size:14px !important;}
+}
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery("#liveCourse").owlCarousel({
+        loop:false,
+        margin:10,
+        nav:true,
+        responsiveClass:true,
+        responsive:{
+            0:{
+                items:1
+            },
+            600:{
+                items:1
+            },
+            1000:{
+                items:1
+            }
+        }
+      });
+      
+      jQuery('.sa-owl-next').click(function(){
+          jQuery('.owl-next').click();
+      });
+      jQuery('.sa-owl-prev').click(function(){
+          jQuery('.owl-prev').click();
+      });
+    });
+</script>
+<?php
+else:
+    //$upload_dir = wp_get_upload_dir();
+?>
+<!--
+<div class="no-online-class">
+    <img src="<?php //echo UPLOADS_DIR.'/2023/02/7714651.webp'; ?>" class="mb-5">
+    <div><span>در حال حاضر هیچ کلاس آنلاینی موجود نیست.</span></div>
+</div>
+<style>
+    .no-online-class{
+        text-align:center;
+    }
+    .no-online-class span{
+       color:#fff;
+        text-align:Center;
+        font-size:18px;
+        border-radius:25px;
+        padding:7px 15px;
+        border:2px dashed #fff;
+    }
+@media(max-width:480px){
+    .no-online-class span{
+        font-size:14px;
+    }
+}
+</style>-->
+<style>
+    #LiveCourseSection{display:none;}
+</style>
+<?php
+endif;
+}
+add_shortcode('Live_Courses', 'Live_Courses_func');
+
 
 /**     
  * Display the comment template with the [mrh_comments_template] 
@@ -257,7 +387,7 @@ function mrh_comments_number( $open )
 
 
 /* Course Loop */ 
-add_shortcode('courses_loop', 'courses_loop_func' );
+
 function courses_loop_func() {
     $args = array(
         'post_type' => 'course',
@@ -282,7 +412,7 @@ function courses_loop_func() {
             $custom = get_post_custom( get_the_ID() );
 			$course = get_post_meta(get_the_ID()); 
 			if ($ads_counter==3 || $ads_counter==6):
-				echo '<img src="'.UPLOADS_DIR.'/2022/10/ind00ex.jpg" class="goto-img">';
+				echo '<img src="'.UPLOADS_DIR.'/2024/07/ind00ex.jpg" class="goto-img">';
 			endif;
 			$image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large');
 			?>
@@ -311,11 +441,11 @@ function courses_loop_func() {
             <? echo get_the_title($course['course-teacher'][0]); ?>
           </li>
           <li class="detail">
-              <img src="<?php echo UPLOADS_DIR.'/2022/09/timer.svg'; ?>" alt="" class="detail-icon" width="24">
+              <img src="<?php echo UPLOADS_DIR.'/2024/07/timer.svg'; ?>" alt="" class="detail-icon" width="24">
             <? echo $course['start-hour'][0]; ?>
           </li>
           <li class="detail">
-              <img src="<?php echo UPLOADS_DIR.'/2022/09/calendar.svg'; ?>" alt="" class="detail-icon" width="24">
+              <img src="<?php echo UPLOADS_DIR.'/2024/07/calendar.svg'; ?>" alt="" class="detail-icon" width="24">
 			  تاریخ شروع دوره <? echo $course['start-date'][0]; ?>
 
           </li>
@@ -344,7 +474,6 @@ function courses_loop_func() {
     endif;
 
 	
-	//print_r($cpt_fields);
 	
 	?>
 	<style>
@@ -426,14 +555,13 @@ h3.course-title {
 <?php
 }
 
+add_shortcode('courses_loop', 'courses_loop_func' );
 
 
 
-// Show live course items in page
 function live_courses_page_func(){
-    
-    //https://lms.tamland.ir/api/api/course/freeClassList/-1/3
-    $request_url = 'https://api.tamland.ir/api/main/freeClassList/-1/1';
+    //https://lms.tamland.ir/api/api/course/freeClassList/-1/4
+    $request_url = 'https://api.tamland.ir/api/main/freeClassList/-1/2';
     $curl = curl_init($request_url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
@@ -445,11 +573,14 @@ function live_courses_page_func(){
     
     $courses = $response['data'];
     
-    if (!empty($courses)):
+    if(!empty($courses)):
 
 ?>
    <div class="live-course-place">
         <div class="live-course-wrapper">
+  <?php
+    if (!empty($courses)) {
+    ?>
     <div class="row">
        
     <?php
@@ -464,16 +595,16 @@ function live_courses_page_func(){
                                 <img src="https://stream.tamland.ir/tamland/1402/course/<?php echo $course['fldCoursePicAddress']; ?>" alt="">
                                 <img src="<?php echo UPLOADS_DIR.'/2022/11/play-icon.png'; ?>" alt="" class="play-icon">
                             </a>
-                        </div> 
+                        </div>
                         <?php  echo '<a href="https://lms.tamland.ir/live/' . $course['courseId'] . '"> <h3 class="course-title">' . $course['courseName'] . '</h3> </a>'; ?>
                        <p><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/jalase-dark.png" class="live-icon"> <?php echo $course['courseStepName']; ?></p>
                        <div>
-                        <p> <?php echo '<img src="'.get_stylesheet_directory_uri().'/assets/img/presentation-dark.png" class="live-icon"> '. $course['fldTeacherName']; ?> </p> 
+                        <span><img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/presentation-dark.png" class="live-icon"> <?php echo $course['fldTeacherName']; ?> </span> 
                         <?php
                         // Get Start And End Time
-                        $starttime = $course['fldShowStartDate'];
+                        $starttime = $course['fldStartDateTime'];
                         $starttime = explode("T","$starttime");
-                        $endtime = $course['fldShowEndDate'];
+                        $endtime = $course['fldEndDateTime'];
                         $endtime = explode("T","$endtime");
                         $starthour = wp_date( 'H:i', strtotime($starttime[1]),  date_default_timezone_get('Asia/Tehran') );
                         $endhour = wp_date( 'H:i', strtotime($endtime[1]),  date_default_timezone_get('Asia/Tehran') );
@@ -501,6 +632,7 @@ function live_courses_page_func(){
         </div>
 <?php } ?>
 </div>
+<?php } ?>
 </div>
 </div>
 <style>
@@ -568,41 +700,54 @@ li.detail-item {
 </style>
 <?php
 else:
-    echo do_shortcode("[elementor-template id='3930']");
+    echo do_shortcode("[elementor-template id='4827']");
 endif;
 }
 add_shortcode('live_courses_page', 'live_courses_page_func');
 
+function add_js_footer(){
+    ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function(){
+                setTimeout(function(){
+                    jQuery('[data-filter-id=4500] .jet-radio-list-wrapper > .jet-radio-list__row:nth-child(1) .jet-radio-list__item').click();
+                    jQuery('[data-filter-id=3374] .jet-radio-list-wrapper > .jet-radio-list__row:nth-child(1) .jet-radio-list__item').click();
+                },1000);
+                
+            });
+        </script>
+    <?php
+}
+add_action('wp_footer','add_js_footer');
+
 //add_action('wp_head','add_Analytics');
 function add_Analytics(){
-    if (!is_page('course-checkout') && !is_page('return-payment-gateway')) {
     ?>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FRY93YKGD1"></script>
-    <script async>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ERL42EPLHS"></script>
+    <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'G-FRY93YKGD1');
+      gtag('config', 'G-ERL42EPLHS');
     </script>
     
     <!-- Google Tag Manager -->
-    <script async>(function(w,d,s,l,i){w[l]=w[l][];w[l].push({'gtm.start':
+    <script>(function(w,d,s,l,i){w[l]=w[l][];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5S53CVZ6');</script>
+    })(window,document,'script','dataLayer','GTM-NSNB5N6K');</script>
     <!-- End Google Tag Manager -->
     <?php
-    }
 }
 
 add_action( 'wp_body_open', 'wpdoc_add_custom_body_open_code' );
 function wpdoc_add_custom_body_open_code(){
     ?>
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5S53CVZ6"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSNB5N6K"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <?php
@@ -610,8 +755,8 @@ function wpdoc_add_custom_body_open_code(){
 
 function query_string_redirects(){
     if( is_tax( 'grade' ) ){
-    $teacher_chbox = $_GET['teacher_chbox'];
-    $lesson_chbox = $_GET['lesson_chbox'];
+    $teacher_chbox=isset($_GET['teacher_chbox'])?$_GET['teacher_chbox']:"";
+    $lesson_chbox=isset($_GET['lesson_chbox'])?$_GET['lesson_chbox']:"";
      ?>
         <script type="text/javascript">
             jQuery(document).ready(function(){
@@ -631,18 +776,18 @@ function query_string_redirects(){
     <?php   
     }
 }
-//add_action('wp_footer','query_string_redirects');
+add_action('wp_footer','query_string_redirects');
 
-add_filter( 'elementor_pro/custom_fonts/font_display', function( $current_value, $font_family, $data ) {
-	return 'swap';
-}, 10, 3 );
 
+//add courses carousel image size
+add_image_size( 'Courses List', 243, 243 );
+
+//add courses thumbnail for single page size
+add_image_size( 'Courses Thumbnail', 320, 320 );
 
 
 
 function add_float_button(){
-    
-    if (!is_page('course-checkout') && !is_page('return-payment-gateway')) {
     ?>
         <div class="kc_fab_wrapper"></div>
         <script>
@@ -661,12 +806,12 @@ function add_float_button(){
                         "title":"کنکور تام‌لند"
                     },
                     {
-                        "url":"https://mid2.tamland.ir",
+                        "url":"https://mid1.tamland.ir",
                         "bgcolor":"#fff",
                         "color":"#222",
-                        "icon":'<svg width="117" height="38" viewBox="0 0 117 38" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100.294 12.2761V4.53906L92.3633 12.4509V20.1879H100.119L108.05 12.2761H100.294Z" fill="#1D4A00"/><path d="M108.644 20.6199V12.8828L100.715 20.7929V28.5299H108.471L116.4 20.6199H108.644Z" fill="#1D4A00"/><path d="M109.066 29.1149V36.852L116.997 28.9402V21.2031L109.066 29.1149Z" fill="#1D4A00"/><path d="M91.7654 11.8571L99.6964 3.94531H91.9017L84.0078 11.8571H91.7654Z" fill="#1D4A00"/><path d="M91.6109 29.314C93.8122 31.5099 94.9164 34.3926 94.9253 37.277H99.5031C99.4801 33.2399 97.9318 29.2098 94.851 26.1365C91.7454 23.0385 87.6665 21.4904 83.5859 21.4922V26.0077C86.4933 26.0059 89.3989 27.1074 91.6109 29.314Z" fill="#959595"/><path d="M83.5948 32.2812C83.5912 32.2812 83.5895 32.2812 83.5859 32.2812V37.2804H88.6397C88.6308 35.9494 88.1088 34.6979 87.1639 33.7552C86.2084 32.8055 84.9414 32.2812 83.5948 32.2812Z" fill="#1D4A00"/><path d="M91.0233 29.9004C88.9724 27.8545 86.2792 26.8342 83.5859 26.8359V28.9454V31.452C83.5895 31.452 83.5912 31.452 83.5948 31.452C85.1644 31.452 86.6401 32.0628 87.7496 33.1696C88.852 34.2694 89.4608 35.7275 89.4696 37.2809H91.9416H94.1022C94.0916 34.4918 92.9998 31.8722 91.0233 29.9004Z" fill="#959595"/><path d="M99.8694 29.3688V21.0351H91.5171V12.7031H83.5859V20.6714C87.8771 20.6697 92.1701 22.2972 95.4367 25.5558C98.6785 28.7898 100.308 33.0316 100.331 37.2806H108.224V29.3688H99.8694Z" fill="#959595"/><path d="M72.0784 22.7381L75.0353 25.6878L78.0222 22.7063L75.0353 19.7266L72.0784 22.6763L69.1198 19.7266L66.1328 22.7063L69.1198 25.6878L72.0784 22.7381Z" fill="#1D4A00"/><path d="M23.863 19.7303L20.875 22.7109L23.863 25.6916L26.8509 22.7109L23.863 19.7303Z" fill="#1D4A00"/><path d="M40.7734 25.8786V26.8671V31.0807V37.282H44.9974V31.0807H57.4303V20.6641H45.9989C43.1181 20.6641 40.7734 23.003 40.7734 25.8786ZM53.2064 26.8654H44.9974V25.8786C44.9974 25.3278 45.4468 24.8795 45.9989 24.8795H53.2046V26.8654H53.2064Z" fill="#959595"/><path d="M72.222 33.0666H65.0146C64.4625 33.0666 64.013 32.6183 64.013 32.0675V20.6641H59.7891V32.0675C59.7891 34.9431 62.1337 37.282 65.0146 37.282H76.4459V26.8654H72.222V33.0666Z" fill="#959595"/><path d="M34.1844 32.0675C34.1844 32.6183 33.7349 33.0666 33.1828 33.0666H25.9754V26.8654H21.7514V33.0666H14.544C13.9919 33.0666 13.5424 32.6183 13.5424 32.0675V27.4338V23.2854H9.3185V27.4338V32.0675C9.3185 32.6183 8.86903 33.0666 8.31693 33.0666H0V37.282H8.31693C9.48307 37.282 10.5607 36.899 11.4314 36.2529C12.302 36.899 13.3796 37.282 14.5458 37.282H21.7532H25.9771H33.1846C36.0672 37.282 38.4101 34.9431 38.4101 32.0675V20.6641H34.1861V32.0675H34.1844Z" fill="#959595"/><path d="M1.01252 10.7016C1.01252 10.0982 1.16082 9.54593 1.45742 9.04478C1.75402 8.5334 2.15289 8.12942 2.65403 7.83282C3.16541 7.53622 3.72281 7.38792 4.32623 7.38792H7.6246C8.22802 7.38792 8.7803 7.53622 9.28145 7.83282C9.79283 8.12942 10.1968 8.5334 10.4934 9.04478C10.79 9.54593 10.9383 10.0982 10.9383 10.7016C10.9383 11.2948 10.79 11.8471 10.4934 12.3585C10.1968 12.8596 9.79283 13.2585 9.28145 13.5551C8.7803 13.8517 8.22802 14 7.6246 14C7.02118 14 6.46889 13.8517 5.96774 13.5551C5.4666 13.2585 5.06772 12.8596 4.77113 12.3585C4.47453 11.8573 4.32623 11.3051 4.32623 10.7016V9.39763C3.96827 9.39763 3.66144 9.52547 3.40576 9.78116C3.1603 10.0368 3.03757 10.3437 3.03757 10.7016V17.1756L1.01252 17.6819V10.7016ZM6.35127 10.7016C6.35127 11.0596 6.474 11.3664 6.71946 11.6221C6.96492 11.8676 7.26664 11.9903 7.6246 11.9903C7.98256 11.9903 8.28427 11.8676 8.52973 11.6221C8.78542 11.3664 8.91326 11.0596 8.91326 10.7016C8.91326 10.3437 8.78542 10.0368 8.52973 9.78116C8.28427 9.52547 7.98256 9.39763 7.6246 9.39763H6.35127V10.7016ZM12.4596 16.0404L15.5279 14H14.6381C14.1676 14 13.692 13.8568 13.2113 13.5704C12.7409 13.2738 12.3471 12.875 12.03 12.3738C11.7232 11.8727 11.5698 11.3204 11.5698 10.717C11.5698 10.1238 11.7181 9.57149 12.0147 9.06012C12.3113 8.54875 12.7102 8.14476 13.2113 7.84816C13.7227 7.55156 14.275 7.40327 14.8682 7.40327H18.1819V14.6443L13.5642 17.7126L12.4596 16.0404ZM13.5795 10.6863C13.5795 11.0443 13.7022 11.3511 13.9477 11.6068C14.2034 11.8625 14.5102 11.9903 14.8682 11.9903H16.1722V9.39763H14.8682C14.5204 9.39763 14.2187 9.52547 13.963 9.78116C13.7074 10.0266 13.5795 10.3283 13.5795 10.6863ZM18.9786 11.9903H22.2769V10.7016C22.2769 10.3437 22.1491 10.042 21.8934 9.7965C21.6479 9.54081 21.3462 9.41297 20.9883 9.41297H19.2087V7.40327H20.9883C21.5917 7.40327 22.144 7.55156 22.6451 7.84816C23.1463 8.14476 23.54 8.54363 23.8264 9.04478C24.123 9.54593 24.2713 10.0982 24.2713 10.7016V14H18.9786V11.9903ZM29.6621 14C29.0586 14 28.5012 13.8517 27.9899 13.5551C27.4887 13.2585 27.0898 12.8596 26.7932 12.3585C26.4966 11.8471 26.3483 11.2948 26.3483 10.7016C26.3483 10.1084 26.4966 9.56127 26.7932 9.06012C27.0898 8.54875 27.4938 8.14476 28.0052 7.84816C28.5166 7.55156 29.0689 7.40327 29.6621 7.40327H32.9451V10.6863C32.9451 11.0545 33.0729 11.3664 33.3286 11.6221C33.5843 11.8676 33.8911 11.9903 34.2491 11.9903L34.6019 13.0028L34.2491 14C33.8093 14 33.3951 13.9182 33.0064 13.7545C32.628 13.5807 32.2905 13.3403 31.9939 13.0335C31.6871 13.3403 31.3342 13.5807 30.9354 13.7545C30.5365 13.9182 30.1121 14 29.6621 14ZM28.358 10.7016C28.358 11.0596 28.4859 11.3664 28.7416 11.6221C28.9973 11.8676 29.3041 11.9903 29.6621 11.9903C30.02 11.9903 30.3217 11.8676 30.5672 11.6221C30.8126 11.3664 30.9354 11.0596 30.9354 10.7016V9.39763H29.6621C29.3041 9.39763 28.9973 9.52547 28.7416 9.78116C28.4859 10.0368 28.358 10.3437 28.358 10.7016ZM33.4215 13.0028L33.7897 11.9903H34.7408V3.73671L36.7352 3.24579V7.40327H41.8592C42.4626 7.40327 43.0149 7.55156 43.516 7.84816C44.0172 8.14476 44.4161 8.54363 44.7126 9.04478C45.0092 9.54593 45.1575 10.0982 45.1575 10.7016C45.1575 11.1516 45.0706 11.5812 44.8967 11.9903H45.9246L46.2775 13.0028L45.9246 14H33.7897L33.4215 13.0028ZM41.8592 11.9903C42.2171 11.9903 42.524 11.8676 42.7797 11.6221C43.0353 11.3664 43.1632 11.0596 43.1632 10.7016C43.1632 10.3437 43.0353 10.042 42.7797 9.7965C42.524 9.54081 42.2171 9.41297 41.8592 9.41297H36.7352V11.9903H41.8592ZM45.4186 14L45.0964 13.0028L45.4339 11.9903H45.4646C45.8226 11.9903 46.1243 11.8676 46.3697 11.6221C46.6254 11.3664 46.7533 11.0596 46.7533 10.7016V8.15499H48.763V10.9164C48.763 11.213 48.8653 11.4687 49.0698 11.6835C49.2846 11.888 49.5403 11.9903 49.8369 11.9903C50.1335 11.9903 50.384 11.888 50.5886 11.6835C50.8034 11.4687 50.9108 11.213 50.9108 10.9164V8.15499H52.9205V10.9164C52.9205 11.213 53.0227 11.4687 53.2273 11.6835C53.4421 11.888 53.6977 11.9903 53.9943 11.9903C54.2909 11.9903 54.5415 11.888 54.7461 11.6835C54.9608 11.4687 55.0682 11.213 55.0682 10.9164V8.07828L57.0779 7.57202V10.9011C57.0779 11.4636 56.9399 11.9852 56.6637 12.4659C56.3876 12.9363 56.0143 13.3096 55.5438 13.5858C55.0733 13.8619 54.5569 14 53.9943 14C53.6262 14 53.258 13.9233 52.8898 13.7699C52.5318 13.6062 52.2096 13.4017 51.9233 13.1562C51.6471 13.4221 51.3301 13.6318 50.9721 13.7852C50.6142 13.9284 50.2357 14 49.8369 14C49.4482 14 49.0596 13.9131 48.6709 13.7392C48.2925 13.5551 47.9703 13.3352 47.7044 13.0795C47.4078 13.3659 47.0652 13.5909 46.6766 13.7545C46.2982 13.9182 45.8942 14 45.4646 14H45.4186ZM58.6134 16.0404L61.6816 14H60.7918C60.3214 14 59.8458 13.8568 59.3651 13.5704C58.8946 13.2738 58.5009 12.875 58.1838 12.3738C57.877 11.8727 57.7236 11.3204 57.7236 10.717C57.7236 10.1238 57.8719 9.57149 58.1685 9.06012C58.4651 8.54875 58.8639 8.14476 59.3651 7.84816C59.8765 7.55156 60.4288 7.40327 61.0219 7.40327H64.3357V11.9903H65.1027L65.4556 13.0028L65.1027 14H64.3357V14.6443L59.7179 17.7126L58.6134 16.0404ZM59.7333 10.6863C59.7333 11.0443 59.856 11.3511 60.1015 11.6068C60.3572 11.8625 60.664 11.9903 61.0219 11.9903H62.326V9.39763H61.0219C60.6742 9.39763 60.3725 9.52547 60.1168 9.78116C59.8611 10.0266 59.7333 10.3283 59.7333 10.6863ZM64.6189 14L64.2814 13.0028L64.6342 11.9903H64.6496C65.0075 11.9903 65.3143 11.8676 65.57 11.6221C65.8257 11.3664 65.9536 11.0596 65.9536 10.7016V8.03226L67.9479 7.54134V10.7016C67.9479 11.0596 68.0758 11.3664 68.3314 11.6221C68.5871 11.8676 68.894 11.9903 69.2519 11.9903L69.6048 13.0028L69.2519 14C68.8019 14 68.3775 13.9131 67.9786 13.7392C67.5797 13.5551 67.2371 13.3096 66.9507 13.0028C66.6541 13.3096 66.3064 13.5551 65.9075 13.7392C65.5189 13.9131 65.0996 14 64.6496 14H64.6189ZM64.3581 4.38104H68.1013V5.99187H64.3581V4.38104ZM68.758 14L68.4205 13.0028L68.758 11.9903H68.7887C69.1467 11.9903 69.4535 11.8625 69.7092 11.6068C69.9649 11.3511 70.0927 11.0494 70.0927 10.7016V7.38792H73.3911C73.9843 7.38792 74.5314 7.53622 75.0326 7.83282C75.5439 8.12942 75.9479 8.5334 76.2445 9.04478C76.5411 9.54593 76.6894 10.0982 76.6894 10.7016C76.6894 11.2948 76.5411 11.8471 76.2445 12.3585C75.9479 12.8596 75.5439 13.2585 75.0326 13.5551C74.5314 13.8517 73.9843 14 73.3911 14C72.9411 14 72.5166 13.9131 72.1177 13.7392C71.7189 13.5551 71.3762 13.3045 71.0899 12.9875C70.7933 13.3045 70.4455 13.5551 70.0467 13.7392C69.658 13.9131 69.2387 14 68.7887 14H68.758ZM72.1024 10.7016C72.1024 11.0596 72.2251 11.3664 72.4706 11.6221C72.7263 11.8676 73.0331 11.9903 73.3911 11.9903C73.749 11.9903 74.0507 11.8625 74.2962 11.6068C74.5519 11.3511 74.6797 11.0494 74.6797 10.7016C74.6797 10.3437 74.5519 10.0368 74.2962 9.78116C74.0507 9.52547 73.749 9.39763 73.3911 9.39763H72.1024V10.7016Z" fill="#1D4A00"/></svg>',
+                        "icon":'<svg width="166" height="49" viewBox="0 0 166 49" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M142.603 15.4751V5.10156L131.961 15.7094V26.083H142.368L153.011 15.4751H142.603Z" fill="#E52041"/><path d="M153.8 26.647V16.2734L143.16 26.8789V37.2525H153.567L164.207 26.647H153.8Z" fill="#E52041"/><path d="M154.375 38.0532V48.4267L165.017 37.8189V27.4453L154.375 38.0532Z" fill="#E52041"/><path d="M131.156 14.9125L141.798 4.30469H131.339L120.746 14.9125H131.156Z" fill="#E52041"/><path d="M130.944 38.3153C133.898 41.2595 135.38 45.1245 135.392 48.9918H141.535C141.504 43.579 139.426 38.1756 135.292 34.0551C131.125 29.9014 125.651 27.8258 120.176 27.8281V33.8823C124.077 33.88 127.976 35.3568 130.944 38.3153Z" fill="#58595B"/><path d="M120.188 42.2891C120.183 42.2891 120.181 42.2891 120.176 42.2891V48.9918H126.957C126.945 47.2072 126.245 45.5292 124.977 44.2653C123.695 42.992 121.995 42.2891 120.188 42.2891Z" fill="#E52041"/><path d="M130.156 39.1009C127.404 36.3578 123.79 34.9898 120.176 34.9922V37.8205V41.1813C120.181 41.1813 120.183 41.1813 120.188 41.1813C122.294 41.1813 124.274 42.0002 125.763 43.4842C127.242 44.9587 128.059 46.9136 128.071 48.9964H131.388H134.287C134.273 45.2569 132.808 41.7446 130.156 39.1009Z" fill="#58595B"/><path d="M142.026 38.3837V27.2102H130.818V16.0391H120.176V26.7227C125.934 26.7203 131.695 28.9024 136.078 33.2715C140.428 37.6074 142.615 43.2948 142.646 48.9916H153.236V38.3837H142.026V38.3837Z" fill="#58595B"/><path d="M104.748 29.5065L108.716 33.4613L112.724 29.4639L108.716 25.4688L104.748 29.4236L100.778 25.4688L96.7695 29.4639L100.778 33.4613L104.748 29.5065Z" fill="#E52041"/><path d="M40.0407 25.4724L36.0312 29.4688L40.0407 33.4651L44.0502 29.4688L40.0407 25.4724Z" fill="#E52041"/><path d="M62.7227 33.718V35.0434V40.6928V49.0073H68.3906V40.6928H85.074V26.7266H69.7346C65.8689 26.7266 62.7227 29.8625 62.7227 33.718ZM79.406 35.041H68.3906V33.718C68.3906 32.9796 68.9938 32.3784 69.7346 32.3784H79.4037V35.041H79.406Z" fill="#636363"/><path d="M104.937 43.3555H95.2659C94.525 43.3555 93.9219 42.7543 93.9219 42.0159V26.7266H88.2539V42.0159C88.2539 45.8713 91.4001 49.0073 95.2659 49.0073H110.605V35.041H104.937V43.3555Z" fill="#636363"/><path d="M53.8944 42.0159C53.8944 42.7543 53.2913 43.3555 52.5504 43.3555H42.879V35.041H37.211V43.3555H27.5396C26.7988 43.3555 26.1956 42.7543 26.1956 42.0159V35.8031V30.2412H20.5277V35.8031V42.0159C20.5277 42.7543 19.9245 43.3555 19.1837 43.3555H8.02344V49.0073H19.1837C20.7485 49.0073 22.1946 48.4937 23.3628 47.6275C24.5311 48.4937 25.9772 49.0073 27.542 49.0073H37.2134H42.8814H52.5528C56.4209 49.0073 59.5648 45.8713 59.5648 42.0159V26.7266H53.8968V42.0159H53.8944Z" fill="#636363"/><path d="M3.666 15.497C3.15467 15.497 2.68233 15.3713 2.249 15.12C1.82433 14.8687 1.48633 14.5263 1.235 14.093C0.983667 13.6683 0.858 13.2003 0.858 12.689V9.543L2.574 9.114V12.689C2.574 12.9923 2.678 13.2523 2.886 13.469C3.10267 13.6857 3.36267 13.794 3.666 13.794H4.966C5.26067 13.794 5.512 13.6857 5.72 13.469C5.93667 13.2523 6.045 12.9923 6.045 12.689V3.654L7.761 3.225V12.689C7.761 13.2003 7.63533 13.6683 7.384 14.093C7.13267 14.5263 6.79467 14.8687 6.37 15.12C5.94533 15.3713 5.47733 15.497 4.966 15.497H3.666ZM9.52626 13.729L12.1263 12H11.3723C10.9736 12 10.5706 11.8787 10.1633 11.636C9.76459 11.3847 9.43092 11.0467 9.16226 10.622C8.90226 10.1973 8.77226 9.72933 8.77226 9.218C8.77226 8.71533 8.89792 8.24733 9.14926 7.814C9.40059 7.38067 9.73859 7.03833 10.1633 6.787C10.5966 6.53567 11.0646 6.41 11.5673 6.41H14.3753V12.546L10.4623 15.146L9.52626 13.729ZM10.4753 9.192C10.4753 9.49533 10.5793 9.75533 10.7873 9.972C11.0039 10.1887 11.2639 10.297 11.5673 10.297H12.6723V8.1H11.5673C11.2726 8.1 11.0169 8.20833 10.8003 8.425C10.5836 8.633 10.4753 8.88867 10.4753 9.192ZM15.6353 3.654L17.3513 3.225V12H15.6353V3.654ZM22.7724 12C22.2611 12 21.7888 11.8743 21.3554 11.623C20.9308 11.3717 20.5928 11.0337 20.3414 10.609C20.0901 10.1757 19.9644 9.70767 19.9644 9.205C19.9644 8.70233 20.0901 8.23867 20.3414 7.814C20.5928 7.38067 20.9351 7.03833 21.3684 6.787C21.8018 6.53567 22.2698 6.41 22.7724 6.41H25.5544V9.192C25.5544 9.504 25.6628 9.76833 25.8794 9.985C26.0961 10.193 26.3561 10.297 26.6594 10.297L26.9584 11.155L26.6594 12C26.2868 12 25.9358 11.9307 25.6064 11.792C25.2858 11.6447 24.9998 11.441 24.7484 11.181C24.4884 11.441 24.1894 11.6447 23.8514 11.792C23.5134 11.9307 23.1538 12 22.7724 12ZM21.6674 9.205C21.6674 9.50833 21.7758 9.76833 21.9924 9.985C22.2091 10.193 22.4691 10.297 22.7724 10.297C23.0758 10.297 23.3314 10.193 23.5394 9.985C23.7474 9.76833 23.8514 9.50833 23.8514 9.205V8.1H22.7724C22.4691 8.1 22.2091 8.20833 21.9924 8.425C21.7758 8.64167 21.6674 8.90167 21.6674 9.205ZM26.3482 11.155L26.6602 10.297H27.4662V3.303L29.1562 2.887V6.41H33.4982C34.0095 6.41 34.4775 6.53567 34.9022 6.787C35.3268 7.03833 35.6648 7.37633 35.9162 7.801C36.1675 8.22567 36.2932 8.69367 36.2932 9.205C36.2932 9.58633 36.2195 9.95033 36.0722 10.297H36.9432L37.2422 11.155L36.9432 12H26.6602L26.3482 11.155ZM33.4982 10.297C33.8015 10.297 34.0615 10.193 34.2782 9.985C34.4948 9.76833 34.6032 9.50833 34.6032 9.205C34.6032 8.90167 34.4948 8.646 34.2782 8.438C34.0615 8.22133 33.8015 8.113 33.4982 8.113H29.1562V10.297H33.4982ZM36.9044 12L36.6314 11.155L36.9174 10.297H36.9434C37.2467 10.297 37.5024 10.193 37.7104 9.985C37.927 9.76833 38.0354 9.50833 38.0354 9.205V7.047H39.7384V9.387C39.7384 9.63833 39.825 9.855 39.9984 10.037C40.1804 10.2103 40.397 10.297 40.6484 10.297C40.8997 10.297 41.112 10.2103 41.2854 10.037C41.4674 9.855 41.5584 9.63833 41.5584 9.387V7.047H43.2614V9.387C43.2614 9.63833 43.348 9.855 43.5214 10.037C43.7034 10.2103 43.92 10.297 44.1714 10.297C44.4227 10.297 44.635 10.2103 44.8084 10.037C44.9904 9.855 45.0814 9.63833 45.0814 9.387V6.982L46.7844 6.553V9.374C46.7844 9.85067 46.6674 10.2927 46.4334 10.7C46.1994 11.0987 45.883 11.415 45.4844 11.649C45.0857 11.883 44.648 12 44.1714 12C43.8594 12 43.5474 11.935 43.2354 11.805C42.932 11.6663 42.659 11.493 42.4164 11.285C42.1824 11.5103 41.9137 11.688 41.6104 11.818C41.307 11.9393 40.9864 12 40.6484 12C40.319 12 39.9897 11.9263 39.6604 11.779C39.3397 11.623 39.0667 11.4367 38.8414 11.22C38.59 11.4627 38.2997 11.6533 37.9704 11.792C37.6497 11.9307 37.3074 12 36.9434 12H36.9044ZM48.4755 13.729L51.0755 12H50.3215C49.9228 12 49.5198 11.8787 49.1125 11.636C48.7138 11.3847 48.3801 11.0467 48.1115 10.622C47.8515 10.1973 47.7215 9.72933 47.7215 9.218C47.7215 8.71533 47.8471 8.24733 48.0985 7.814C48.3498 7.38067 48.6878 7.03833 49.1125 6.787C49.5458 6.53567 50.0138 6.41 50.5165 6.41H53.3245V10.297H53.9745L54.2735 11.155L53.9745 12H53.3245V12.546L49.4115 15.146L48.4755 13.729ZM49.4245 9.192C49.4245 9.49533 49.5285 9.75533 49.7365 9.972C49.9531 10.1887 50.2131 10.297 50.5165 10.297H51.6215V8.1H50.5165C50.2218 8.1 49.9661 8.20833 49.7495 8.425C49.5328 8.633 49.4245 8.88867 49.4245 9.192ZM53.9545 12L53.6685 11.155L53.9675 10.297H53.9805C54.2838 10.297 54.5438 10.193 54.7605 9.985C54.9771 9.76833 55.0855 9.50833 55.0855 9.205V6.943L56.7755 6.527V9.205C56.7755 9.50833 56.8838 9.76833 57.1005 9.985C57.3171 10.193 57.5771 10.297 57.8805 10.297L58.1795 11.155L57.8805 12C57.4991 12 57.1395 11.9263 56.8015 11.779C56.4635 11.623 56.1731 11.415 55.9305 11.155C55.6791 11.415 55.3845 11.623 55.0465 11.779C54.7171 11.9263 54.3618 12 53.9805 12H53.9545ZM53.7335 3.849H56.9055V5.214H53.7335V3.849ZM57.8519 12L57.5659 11.155L57.8519 10.297H57.8779C58.1813 10.297 58.4413 10.1887 58.6579 9.972C58.8746 9.75533 58.9829 9.49967 58.9829 9.205V6.397H61.7779C62.2806 6.397 62.7443 6.52267 63.1689 6.774C63.6023 7.02533 63.9446 7.36767 64.1959 7.801C64.4473 8.22567 64.5729 8.69367 64.5729 9.205C64.5729 9.70767 64.4473 10.1757 64.1959 10.609C63.9446 11.0337 63.6023 11.3717 63.1689 11.623C62.7443 11.8743 62.2806 12 61.7779 12C61.3966 12 61.0369 11.9263 60.6989 11.779C60.3609 11.623 60.0706 11.4107 59.8279 11.142C59.5766 11.4107 59.2819 11.623 58.9439 11.779C58.6146 11.9263 58.2593 12 57.8779 12H57.8519ZM60.6859 9.205C60.6859 9.50833 60.7899 9.76833 60.9979 9.985C61.2146 10.193 61.4746 10.297 61.7779 10.297C62.0813 10.297 62.3369 10.1887 62.5449 9.972C62.7616 9.75533 62.8699 9.49967 62.8699 9.205C62.8699 8.90167 62.7616 8.64167 62.5449 8.425C62.3369 8.20833 62.0813 8.1 61.7779 8.1H60.6859V9.205ZM67.6454 13.729L70.2454 12H69.4914C69.0927 12 68.6897 11.8787 68.2824 11.636C67.8837 11.3847 67.5501 11.0467 67.2814 10.622C67.0214 10.1973 66.8914 9.72933 66.8914 9.218C66.8914 8.71533 67.0171 8.24733 67.2684 7.814C67.5197 7.38067 67.8577 7.03833 68.2824 6.787C68.7157 6.53567 69.1837 6.41 69.6864 6.41H72.4944V12.546L68.5814 15.146L67.6454 13.729ZM68.5944 9.192C68.5944 9.49533 68.6984 9.75533 68.9064 9.972C69.1231 10.1887 69.3831 10.297 69.6864 10.297H70.7914V8.1H69.6864C69.3917 8.1 69.1361 8.20833 68.9194 8.425C68.7027 8.633 68.5944 8.88867 68.5944 9.192ZM77.832 15.497C77.3207 15.497 76.8483 15.3713 76.415 15.12C75.9903 14.8687 75.6523 14.5263 75.401 14.093C75.1497 13.6683 75.024 13.2003 75.024 12.689V9.543L76.74 9.114V12.689C76.74 12.9923 76.844 13.2523 77.052 13.469C77.2687 13.6857 77.5287 13.794 77.832 13.794H79.132C79.4267 13.794 79.678 13.6857 79.886 13.469C80.1027 13.2523 80.211 12.9923 80.211 12.689V6.943L81.927 6.514V12.689C81.927 13.2003 81.8013 13.6683 81.55 14.093C81.2987 14.5263 80.9607 14.8687 80.536 15.12C80.1113 15.3713 79.6433 15.497 79.132 15.497H77.832ZM77.143 6.267H78.612V7.645H77.143V6.267ZM85.9951 12C85.4838 12 85.0114 11.8743 84.5781 11.623C84.1534 11.3717 83.8154 11.0337 83.5641 10.609C83.3128 10.1757 83.1871 9.70767 83.1871 9.205V3.654L84.8901 3.225V9.205C84.8901 9.50833 84.9984 9.76833 85.2151 9.985C85.4318 10.193 85.6918 10.297 85.9951 10.297L86.2941 11.155L85.9951 12ZM85.686 11.155L85.998 10.297H86.869C87.1724 10.297 87.4324 10.193 87.649 9.985C87.8657 9.76833 87.974 9.50833 87.974 9.205V6.943L89.677 6.527V9.205C89.677 9.50833 89.781 9.76833 89.989 9.985C90.2057 10.193 90.4657 10.297 90.769 10.297L91.068 11.155L90.769 12C90.3877 12 90.028 11.9263 89.69 11.779C89.3607 11.623 89.0704 11.415 88.819 11.155C88.5677 11.415 88.273 11.623 87.935 11.779C87.6057 11.9263 87.2504 12 86.869 12H85.998L85.686 11.155ZM86.505 3.849H89.69V5.214H86.505V3.849ZM90.4595 11.155L90.7715 10.297H91.7335C92.0368 10.297 92.2968 10.193 92.5135 9.985C92.7302 9.76833 92.8385 9.50833 92.8385 9.205V7.047H94.5285V9.387C94.5285 9.63833 94.6152 9.855 94.7885 10.037C94.9705 10.2103 95.1872 10.297 95.4385 10.297C95.6898 10.297 95.9022 10.2103 96.0755 10.037C96.2575 9.855 96.3485 9.63833 96.3485 9.387V7.047H98.0515V9.387C98.0515 9.63833 98.1382 9.855 98.3115 10.037C98.4935 10.2103 98.7102 10.297 98.9615 10.297C99.2128 10.297 99.4295 10.2103 99.6115 10.037C99.7935 9.855 99.8845 9.63833 99.8845 9.387V6.982L101.574 6.553V9.205C101.574 9.50833 101.678 9.76833 101.886 9.985C102.103 10.193 102.363 10.297 102.666 10.297L102.978 11.155L102.666 12C102.302 12 101.96 11.935 101.639 11.805C101.319 11.6663 101.037 11.48 100.794 11.246C100.56 11.48 100.283 11.6663 99.9625 11.805C99.6505 11.935 99.3168 12 98.9615 12C98.6495 12 98.3375 11.935 98.0255 11.805C97.7135 11.6663 97.4405 11.493 97.2065 11.285C96.9725 11.5103 96.7038 11.688 96.4005 11.818C96.0972 11.9393 95.7765 12 95.4385 12C95.1092 12 94.7798 11.9263 94.4505 11.779C94.1298 11.623 93.8568 11.4367 93.6315 11.22C93.3802 11.4627 93.0898 11.6533 92.7605 11.792C92.4398 11.9307 92.0975 12 91.7335 12H90.7715L90.4595 11.155ZM102.355 11.155L102.667 10.297H103.616C103.919 10.297 104.179 10.193 104.396 9.985C104.613 9.76833 104.721 9.50833 104.721 9.205V6.943L106.424 6.527V9.205C106.424 9.70767 106.298 10.1757 106.047 10.609C105.796 11.0337 105.453 11.3717 105.02 11.623C104.595 11.8743 104.127 12 103.616 12H102.667L102.355 11.155ZM103.655 13.3H105.124V14.665H103.655V13.3ZM107.481 10.297H110.276V9.205C110.276 8.90167 110.168 8.646 109.951 8.438C109.743 8.22133 109.488 8.113 109.184 8.113H107.676V6.41H109.184C109.696 6.41 110.164 6.53567 110.588 6.787C111.013 7.03833 111.347 7.37633 111.589 7.801C111.841 8.22567 111.966 8.69367 111.966 9.205V12H107.481V10.297Z" fill="#E52041"/></svg>',
                         "target":"_blank",
-                        "title":"متوسطه دوم تام‌لند"
+                        "title":"متوسطه اول تام‌لند"
                     },
                     {
                         "url":"https://tamland.ir",
@@ -721,15 +866,13 @@ function add_float_button(){
             }
         </style>
     <?php
-    }
 }
 add_action('wp_footer','add_float_button');
 
 
+
 /*Start Goftino*/
 function add_chat_widget() {
-    
-    if (!is_page('course-checkout') && !is_page('return-payment-gateway')) {
     ?>
     <style>
         #Goftino_tamland {
@@ -860,7 +1003,6 @@ function add_chat_widget() {
         });
     </script>
     <?php
-    }
 }
 add_action('wp_footer', 'add_chat_widget');
 
@@ -874,7 +1016,6 @@ add_shortcode('course_groups','course_groups_func');
 function course_groups_func(){
     $url = get_post_permalink();
     $courses_cat = get_post_meta( get_the_ID(), 'courses-cat', true );
-    if ( !empty($courses_cat) ) {
     echo '<ul>';
     for($i = 0; $i < count($courses_cat); $i++){
         if($courses_cat['item-'.$i]['courses-cat-name-card'] !== ""){
@@ -887,13 +1028,12 @@ function course_groups_func(){
         }
     }
     echo '</ul>';
-    }
 }
 
 /**
  * Courses list UI for pack courses type.
  */ 
- function pack_courses_items_func(){
+function pack_courses_items_func(){
     if(is_singular('course')){
         $courses_cat = get_post_meta( get_the_ID(), 'courses-cat', true );
         $pack_courses = get_post_meta( get_the_ID(), 'pack-courses', true );
@@ -929,7 +1069,7 @@ function course_groups_func(){
                     <div class="row courses-wrapper align-items-start justify-content-center">
                         <div class="courses-title mb-3">
                             <h3>
-                                <img src="<?php echo UPLOADS_DIR.'/2025/02/presention-chart.webp'; ?>" width="24px" height="24px">
+                                <img src="<?php echo UPLOADS_DIR.'/2024/07/presention-chart.png'; ?>">
                             <?php echo $courses_cat['item-'.$i]['courses-cat-name']; ?>
                             </h3>
                         </div>
@@ -1083,33 +1223,33 @@ add_shortcode('pack_courses_items','pack_courses_items_func');
  */ 
 function teachers_course_items_func(){
     if(is_singular('course')){
-        $courses_cat = get_post_meta( get_the_ID(), 'courses-cat', true );
+        //$courses_cat = get_post_meta( get_the_ID(), 'courses-cat', true );
         $teachers_courses = get_post_meta( get_the_ID(), 'teachers-course', true );
-        $course_option_page  = jet_engine()->options_pages->registered_pages['courses-options'];
-        $tax = $course_option_page->get( 'tax' );
+        $courses_options_page  = jet_engine()->options_pages->registered_pages['courses-options'];
+        $tax = $courses_options_page->get( 'tax' );
         ?>
-            <script type="text/javascript" defer>
-                jQuery(document).ready(function(){
-                    jQuery.fn.shuffle = function() {
-                        var allElems = this.get(),
-                            getRandom = function(max) {
-                                return Math.floor(Math.random() * max);
-                            },
-                            shuffled = jQuery.map(allElems, function(){
-                                var random = getRandom(allElems.length),
-                                    randEl = jQuery(allElems[random]).clone(true)[0];
-                                allElems.splice(random, 1);
-                                return randEl;
-                           });
-                 
-                        this.each(function(i){
-                            jQuery(this).replaceWith(jQuery(shuffled[i]));
-                        });
-                 
-                        return jQuery(shuffled);
-                    };
-                });
-            </script>
+        <script type="text/javascript" defer>
+            jQuery(document).ready(function(){
+                jQuery.fn.shuffle = function() {
+                    var allElems = this.get(),
+                        getRandom = function(max) {
+                            return Math.floor(Math.random() * max);
+                        },
+                        shuffled = jQuery.map(allElems, function(){
+                            var random = getRandom(allElems.length),
+                                randEl = jQuery(allElems[random]).clone(true)[0];
+                            allElems.splice(random, 1);
+                            return randEl;
+                       });
+             
+                    this.each(function(i){
+                        jQuery(this).replaceWith(jQuery(shuffled[i]));
+                    });
+             
+                    return jQuery(shuffled);
+                };
+            });
+        </script>
             <div class="container multiteacher my-5">
                 <li class="multiteacher-courses-items">
                     <div class="row courses-wrapper align-items-start justify-content-center">
@@ -1118,7 +1258,7 @@ function teachers_course_items_func(){
                         for($j = 0; $j < count($teachers_courses); $j++){
                                 ?>
 									<div class="col-6 col-md-4 col-lg-3 course-row-item position-relative mb-3 course-row-item-<?php echo $teachers_courses['item-'.$j]['teacher-course-name']; ?>">
-                                        <div class="course-teacher-item shadow-sm rounded overflow-hidden pb-3" data-item="<?php echo $j ?>" id="teacher-<?php echo $teachers_courses['item-'.$j]['teacher-course-name']; ?>">
+                                        <div class="course-teacher-item shadow-sm rounded overflow-hidden" data-item="<?php echo $j ?>" id="teacher-<?php echo $teachers_courses['item-'.$j]['teacher-course-name']; ?>">
                                             <div class="course-teacher-img">
                                                 <img src="<?php echo $teachers_courses['item-'.$j]['teacher-course-img']; ?>">
                                             </div>
@@ -1130,15 +1270,15 @@ function teachers_course_items_func(){
                                                     <div class="col-6 first-class-video-btn" id="<?php echo $teachers_courses['item-'.$j]['teacher-aparat-code']; ?>">
                                                         <div class="elementor-widget-container">
                                                             <a class="w-100 d-block">
-                                                                <button class="w-100" style="background:#11365C;border-radius:15px;font-size:14px">
+                                                                <button class="w-100" style="background:#11365C; width: 100% !important; border-radius:15px;text-wrap: wrap; font-siza:14px font-weight:400 ">
                                                                 ویدیو جلسه اول
                                                                 </button>
                                                             </a>
                                                         </div>
                                                     </div>
                                                 <?php endif; ?>
-                                                <div class="<?php echo ($teachers_courses['item-'.$j]['teacher-aparat-code'] != "") ? "col-6" : "col-12"; ?>">
-                                                    <button class="w-100" style="border-radius:15px;font-size:14px">
+                                                <div class="col-6">
+                                                    <button class="w-100" style="border-radius:15px; width:100% !important; font-size:14px">
                                                         جزئیات بیشتر
                                                     </button>
                                                 </div>
@@ -1171,19 +1311,18 @@ function teachers_course_items_func(){
                                                 <?php if($teachers_courses['item-'.$j]['teacher-course-date'] != ""): ?>
                                                 <li class="mb-3">
                                                     <div>
-                                                        <img src="<?php echo UPLOADS_DIR.'/2022/09/calendar.svg'; ?>"><span class="gray-txt"> تاریخ شروع دوره: </span><span class="fw-bold text-black"><?php echo $teachers_courses['item-'.$j]['teacher-course-date']; ?></span>
+                                                        <img src="<?php echo UPLOADS_DIR.'/2024/07/calendar.svg'; ?>"><span class="gray-txt"> تاریخ شروع دوره: </span><span class="fw-bold text-black"><?php echo $teachers_courses['item-'.$j]['teacher-course-date']; ?></span>
                                                     </div>
                                                 </li>
-                                                <?php
-                                                endif;
+                                                <?php endif; 
                                                 if($teachers_courses['item-'.$j]['teacher-course-hour'] != ""): ?>
                                                 <li class="mb-3">
                                                     <div>
-                                                        <img src="<?php echo UPLOADS_DIR.'/2022/09/timer.svg'; ?>"><span class="gray-txt"> ساعت شروع دوره: </span><span class="fw-bold text-black"><?php echo $teachers_courses['item-'.$j]['teacher-course-hour']; ?></span>
+                                                        <img src="<?php echo UPLOADS_DIR.'/2024/07/timer.svg'; ?>"><span class="gray-txt"> ساعت شروع دوره: </span><span class="fw-bold text-black"><?php echo $teachers_courses['item-'.$j]['teacher-course-hour']; ?></span>
                                                     </div>
                                                 </li>
                                                 <?php
-                                                endif;
+                                                endif; 
                                                 if($teachers_courses['item-'.$j]['teacher-course-desc'] != ""): ?>
                                                 <li class="mb-3">
                                                     <div class="text-black" style="font-size:14px;text-align:justify;">
@@ -1424,12 +1563,11 @@ function teachers_course_items_func(){
 add_shortcode('teachers_course_items','teachers_course_items_func');
 
 
-
-
 /**
  * api for update courses info from LMS
  **/
  
+add_action('add_meta_boxes', 'add_custom_button_meta_box'); 
 function add_custom_button_meta_box() {
     add_meta_box(
         'updatecourse-button-meta-box', // Unique ID for the meta box
@@ -1440,13 +1578,12 @@ function add_custom_button_meta_box() {
         'high' // Priority (e.g., 'high', 'low')
     );
 }
-add_action('add_meta_boxes', 'add_custom_button_meta_box');
 
 function render_updatecourse() {
     ?>
     <input type="button" onClick="updatecourse()" class="button button-primary button-large" value="به‌روزرسانی کن" id="updatecoursen-button" />
     <script>
-     function changeTime(mydate){
+    function changeTime(mydate){
         // set the date to show in PST timezone
         let date = new Date(mydate);
         let timezoneOffset = date.getTimezoneOffset();
@@ -1493,25 +1630,20 @@ function render_updatecourse() {
           .then(
               result=>{
                 let dataVal = result['data']['0'];
-                //console.log(dataVal);
                 
                 if(courseType == "normal-course"){
-                    jQuery('[name="tax_input[courses-type][]"][value="165"]').attr('checked','checked');
+                    jQuery('[name="tax_input[courses-type][]"][value="233"]').attr('checked','checked');
                 }else if(courseType == "multi-teacher"){
-                    jQuery('[name="tax_input[courses-type][]"][value="164"]').attr('checked','checked');
+                    jQuery('[name="tax_input[courses-type][]"][value="232"]').attr('checked','checked');
                 }
                 
                 jQuery('[name="post_title"]').val(dataVal.fldTitle); // set Course Title
                 
                 jQuery('[name="purchase-link"]').val('https://'); // set Course Purchase Link
                 
-                let price = dataVal.fldPrediscountedprice.toString();
-                price = price.substring(0,(price.length - 1));
-                jQuery('[name="price"]').val(price); // set Price without discount
+                jQuery('[name="price"]').val(dataVal.fldPrediscountedprice); // set Price without discount
                 
-                let price_sale = dataVal.fldPrice.toString();
-                price_sale = price_sale.substring(0,(price_sale.length - 1));
-                jQuery('[name="price_sale"]').val(price_sale); // set Price with discount
+                jQuery('[name="price_sale"]').val(dataVal.fldPrice); // set Price with discount
                 
                 // set Start Date
                 let fldShowStartDateCourseStep = dataVal.fldShowStartDateCourseStep;
@@ -1532,24 +1664,29 @@ function render_updatecourse() {
                 desc.html(dataVal.fldDescription);
                 
                 // set Excerpt Description
-                //let excerptDesc = jQuery('[data-control-name="course-short-desc"] iframe').contents().find('body');
-                //excerptDesc.html(dataVal.fldDescription); 
+                let excerptDesc = jQuery('[data-control-name="course-short-desc"] iframe').contents().find('body');
+                excerptDesc.html(dataVal.fldDescription); 
                 
                 // set Course Field Category
                 let audienceList = [
-                    {audienceName:'ریاضی',audienceVal:69, audienceIndex:'1'},
-                    {audienceName:'علوم تجربی',audienceVal:71, audienceIndex:'2'},
-                    {audienceName:'انسانی',audienceVal:72, audienceIndex:'3'},
+                    {audienceName:'ریاضی',audienceVal:179, audienceIndex:'1'},
+                    {audienceName:'علوم تجربی',audienceVal:176, audienceIndex:'2'},
+                    {audienceName:'انسانی',audienceVal:177, audienceIndex:'3'},
                     {audienceName:'هنر',audienceVal:91, audienceIndex:'4'},
                     {audienceName:'زبان',audienceVal:115, audienceIndex:'5'},
-                    {audienceName:'مشاوره',audienceVal:129, audienceIndex:'9'}
+                    {audienceName:'مشاوره',audienceVal:129, audienceIndex:'9'},
+                    {audienceName:'المپیاد',audienceVal:180, audienceIndex:'00'}
                     ],
-                audienceRes = audienceList.findIndex(audienceList => audienceList.audienceIndex === dataVal.audience);
-                jQuery('[name="tax_input[field][]"][value="'+audienceList[audienceRes].audienceVal+'"]').attr('checked','checked'); 
+                audienceRes = "",
+                audience = dataVal.audience.split(",");
+                for(i = 0;i<audience.length; i++){
+                    audienceRes = audienceList.findIndex(audienceList => audienceList.audienceIndex === audience[i]);
+                    jQuery('[name="tax_input[field][]"][value="'+audienceList[audienceRes].audienceVal+'"]').attr('checked','checked');  
+                }
                 
                 // set Course Grade
                 let fldTypeList = [
-                    {fldType:93,fldTypeVal:146},
+                    {fldType:55,fldTypeVal:146},
                     {fldType:69,fldTypeVal:143},
                     {fldType:76,fldTypeVal:179},
                     {fldType:80,fldTypeVal:178},
@@ -1607,7 +1744,7 @@ function render_updatecourse() {
                     jQuery('[name="price_sale"]').val(dataVal.totalPackagePrice);
                 }
                 
-                jQuery('[name="tax_input[courses-type][]"][value="163"]').attr('checked','checked');
+                jQuery('[name="tax_input[courses-type][]"][value="231"]').attr('checked','checked');
                 
                 // set Start Date
                 let fldStartDateTime = dataVal.fldStartDateTime;
@@ -1660,6 +1797,7 @@ function render_updatecourse() {
               })
               .catch((error) => console.error(error));
         }
+        
           setTimeout(function(){
             jQuery('#updatecoursen-button').removeAttr('disabled');
           },1000);
@@ -1669,143 +1807,133 @@ function render_updatecourse() {
 }
 
 function sa_clarity(){
-    if (!is_page('course-checkout')) {
     ?>
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "mehb0ip6zx");
+        })(window, document, "clarity", "script", "mehiejzygy");
     </script>
     <?php
-    }
 }
-//add_action('wp_head', 'sa_clarity', 10);
+add_action('wp_head', 'sa_clarity', 10);
 
-//[ads_banner_1st  grade="130"]
+//[ads_banner_1st  taxid="130"]
 add_shortcode('ads_banner_1st','ads_banner_1st_func');
 function ads_banner_1st_func($atts){
     $atts_banner = shortcode_atts( array(
-		'grade' => ''
+		'taxid' => ''
 	), $atts );
-    $ads_banner_1st = get_term_meta( $atts_banner['grade'], 'ads-banner-1st', true );
+    $ads_banner_1st = get_term_meta( $atts_banner['taxid'], 'ads-banner-1st', true );
     ?>
     <div class="ads-banner-1st-place">
         <div class="ads-banner-1st-wrapper d-flex align-items-center">
-            <?php if(count($ads_banner_1st) > 1){ ?>
-                <div class="owl-carousel" id="adsBanner1st">
-                    <?php for($i = 0; $i < count($ads_banner_1st); $i++){ ?>
-                    <div>
-                        <div class="item-box">
-                            <?php if($ads_banner_1st['item-'.$i]['ads-banner-1st-img'] != null): ?>
-                            
-                                <div class="ads-banner-1st-image">
-                                    <a href="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-link']; ?>" title="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-title']; ?>" target="_blank">
-                                    <img src="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-img']; ?>" alt="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-title']; ?>">
-                                    </a>
-                                </div>
-                            
-                            <?php endif; ?>
-                        </div>
+		<?php if(count($ads_banner_1st) > 1){ ?>
+            <div class="owl-carousel" id="adsBanner1st">
+                <?php for($i = 0; $i < count($ads_banner_1st); $i++){ ?>
+                <div>
+                    <div class="item-box">
+                        <?php if($ads_banner_1st['item-'.$i]['ads-banner-1st-img'] != null): ?>
+                            <div class="ads-banner-1st-image">
+                                <a href="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-link']; ?>" title="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-title']; ?>"><img src="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-img']; ?>" alt="<?php echo $ads_banner_1st['item-'.$i]['ads-banner-1st-title']; ?>"></a>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <?php } ?>
                 </div>
-                <style>
-                    #adsBanner1st .owl-carousel{
-                        margin:auto;
-                    }
-                    #adsBanner1st .owl-stage {
-                        display:flex;
-                        flex-direction:row;
-                        align-items:end;
-                    }
-                    #adsBanner1st svg, #adsBanner1st span{width:auto;display:inline;}
-                    #adsBanner1st .owl-nav{
-                    	position: absolute;
-                        width: 100%;
-                        top: calc(50% - 16px);
-                        height: 0;
-                    }
-                    .ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        width:32px;
-                        height:32px;
-                        color:#fff;
-                        background: #fff;
-                        border-radius:50%;
-                        font-size:14px;
-                        cursor:pointer;
-                        box-shadow:0 4px 25px rgba(0,0,0,0.07);
-                        position: absolute;
-                        z-index: 2;
-                    }
-                    .ads-banner-1st-owl-next{right:-10px;}
-                    .ads-banner-1st-owl-prev{left:-10px;}
-                    }
-                    #adsBanner1st .owl-item{
-                        width:277px;
-                    }
-                    #adsBanner1st .item-box {
-                      width:100%;
-                      display:flex;
-                      flex-direction: column;
-                      color:#fff;
-                    }
-                    #adsBanner1st .item-box h3{height:35px;}
-                    #adsBanner1st .owl-stage-outer{
-                        padding-top:8px;
-                        padding-bottom:15px;
-                    }
-                    .ads-banner-1st-card{
-                        background:#fff;
-                        border-radius:16px;
-                        padding:7px;
-                        box-shadow:0 4px 25px rgba(0,0,0,0.07);
-                        color:#2D3748;
-                    }
-                    @media(max-width:1000px){
-                        #adsBanner1st .owl-carousel{
-                            margin:auto;
-                        }
-                        .ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{display:none;}
-                    }
-                    @media(max-width:480px){
-                        #adsBanner1st .owl-carousel{
-                            width:95% !important;
-                        }
-                        .ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{display:none;}
-                    }
-                    </style>
-                    <script type="text/javascript">
-                        jQuery(document).ready(function(){
-                          jQuery("#adsBanner1st").owlCarousel({
-                            rtl:true,
-                            loop:true,
-                            margin:30,
-                            nav:true,
-                    		navText:['<div class="ads-banner-1st-owl-next"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.57812 11L6.57812 6L1.57812 1" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>','<div class="ads-banner-1st-owl-prev"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.4375 1L1.4375 6L6.4375 11" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'],
-                            dots:false,
-                            autoplay:true,
-                            autoplayTimeout:3000,
-                            autoplayHoverPause:true,
-                            responsiveClass:true,
-                            responsive:{
-                                0:{
-                                    items:1
-                                },
-                                600:{
-                                    items:1
-                                },
-                                1000:{
-                                    items:1
-                                }
-                            }
-                          });
-                        });
-                    </script>
+                <?php } ?>
+            </div>
+			<style>
+			#adsBanner1st .owl-carousel{
+				margin:auto;
+			}
+			#adsBanner1st .owl-stage {
+				display:flex;
+				flex-direction:row;
+				align-items:end;
+			}
+			#adsBanner1st svg, #adsBanner1st span{width:auto;display:inline;}
+			#adsBanner1st .owl-nav{
+				position: absolute;
+				width: 100%;
+				top: calc(50% - 16px);
+				height: 0;
+			}
+			.ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{
+				display:flex;
+				align-items:center;
+				justify-content:center;
+				width:32px;
+				height:32px;
+				color:#fff;
+				background: #fff;
+				border-radius:50%;
+				font-size:14px;
+				cursor:pointer;
+				box-shadow:0 4px 25px rgba(0,0,0,0.07);
+				position: absolute;
+				z-index: 2;
+			}
+			.ads-banner-1st-owl-next{right:-10px;}
+			.ads-banner-1st-owl-prev{left:-10px;}
+			}
+			#adsBanner1st .owl-item{
+				width:277px;
+			}
+			#adsBanner1st .item-box {
+			  width:100%;
+			  display:flex;
+			  flex-direction: column;
+			  color:#fff;
+			}
+			#adsBanner1st .item-box h3{height:35px;}
+			#adsBanner1st .owl-stage-outer{
+				padding-top:8px;
+				padding-bottom:15px;
+			}
+			.ads-banner-1st-card{
+				background:#fff;
+				border-radius:16px;
+				padding:7px;
+				box-shadow:0 4px 25px rgba(0,0,0,0.07);
+				color:#2D3748;
+			}
+			@media(max-width:1000px){
+				#adsBanner1st .owl-carousel{
+					margin:auto;
+				}
+				.ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{display:none;}
+			}
+			@media(max-width:480px){
+				#adsBanner1st .owl-carousel{
+					width:95% !important;
+				}
+				.ads-banner-1st-owl-next,.ads-banner-1st-owl-prev{display:none;}
+			}
+			</style>
+			<script type="text/javascript">
+				jQuery(document).ready(function(){
+				  jQuery("#adsBanner1st").owlCarousel({
+					rtl:true,
+					loop:true,
+					margin:30,
+					nav:true,
+					navText:['<div class="ads-banner-1st-owl-next"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.57812 11L6.57812 6L1.57812 1" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>','<div class="ads-banner-1st-owl-prev"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.4375 1L1.4375 6L6.4375 11" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'],
+					responsiveClass:true,
+					responsive:{
+						0:{
+							items:1
+						},
+						600:{
+							items:1
+						},
+						1000:{
+							items:1
+						}
+					}
+				  });
+				});
+			</script>
 <?php }elseif(count($ads_banner_1st) == 1){ ?>
     <div class="ads-banner-1st-image">
         <a href="<?php echo $ads_banner_1st['item-0']['ads-banner-1st-link']; ?>" title="<?php echo $ads_banner_1st['item-0']['ads-banner-1st-title']; ?>"><img src="<?php echo $ads_banner_1st['item-0']['ads-banner-1st-img']; ?>" alt="<?php echo $ads_banner_1st['item-0']['ads-banner-1st-title']; ?>"></a>
@@ -1817,20 +1945,21 @@ function ads_banner_1st_func($atts){
 <?php } ?>
         </div>
     </div>
+
 <?php
 }
 
-//[ads_banner_2nd  grade="130"]
+//[ads_banner_2nd  taxid="130"]
 add_shortcode('ads_banner_2nd','ads_banner_2nd_func');
 function ads_banner_2nd_func($atts){
     $atts_banner = shortcode_atts( array(
-		'grade' => ''
+		'taxid' => ''
 	), $atts );
-    $ads_banner_2nd = get_term_meta( $atts_banner['grade'], 'ads-banner-2nd', true );
+    $ads_banner_2nd = get_term_meta( $atts_banner['taxid'], 'ads-banner-2nd', true );
     ?>
     <div class="ads-banner-2nd-place">
         <div class="ads-banner-2nd-wrapper d-flex align-items-center">
-            <?php if(count($ads_banner_2nd) > 1){ ?>
+		<?php if(count($ads_banner_2nd) > 1){ ?>
             <div class="owl-carousel" id="adsBanner2nd">
                 <?php for($i = 0; $i < count($ads_banner_2nd); $i++){ ?>
                 <div>
@@ -1844,98 +1973,97 @@ function ads_banner_2nd_func($atts){
                 </div>
                 <?php } ?>
             </div>
-            <style>
-            #adsBanner2nd .owl-carousel{
-                margin:auto;
+			<style>
+#adsBanner2nd .owl-carousel{
+    margin:auto;
+}
+#adsBanner2nd .owl-stage {
+    display:flex;
+    flex-direction:row;
+    align-items:end;
+}
+#adsBanner2nd svg, #adsBanner2nd span{width:auto;display:inline;}
+#adsBanner2nd .owl-nav{
+	position: absolute;
+    width: 100%;
+    top: calc(50% - 16px);
+    height: 0;
+}
+.ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:32px;
+    height:32px;
+    color:#fff;
+    background: #fff;
+    border-radius:50%;
+    font-size:14px;
+    cursor:pointer;
+    box-shadow:0 4px 25px rgba(0,0,0,0.07);
+    position: absolute;
+    z-index: 2;
+}
+.ads-banner-2nd-owl-next{right:-10px;}
+.ads-banner-2nd-owl-prev{left:-10px;}
+}
+#adsBanner2nd .owl-item{
+    width:277px;
+}
+#adsBanner2nd .item-box {
+  width:100%;
+  display:flex;
+  flex-direction: column;
+  color:#fff;
+}
+#adsBanner2nd .item-box h3{height:35px;}
+#adsBanner2nd .owl-stage-outer{
+    padding-top:8px;
+    padding-bottom:15px;
+}
+.ads-banner-2nd-card{
+    background:#fff;
+    border-radius:16px;
+    padding:7px;
+    box-shadow:0 4px 25px rgba(0,0,0,0.07);
+    color:#2D3748;
+}
+@media(max-width:1000px){
+    #adsBanner2nd .owl-carousel{
+        margin:auto;
+    }
+    .ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{display:none;}
+}
+@media(max-width:480px){
+    #adsBanner2nd .owl-carousel{
+        width:95% !important;
+    }
+    .ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{display:none;}
+}
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery("#adsBanner2nd").owlCarousel({
+        rtl:true,
+        loop:true,
+        margin:30,
+        nav:true,
+		navText:['<div class="ads-banner-2nd-owl-next"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.57812 11L6.57812 6L1.57812 1" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>','<div class="ads-banner-2nd-owl-prev"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.4375 1L1.4375 6L6.4375 11" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'],
+        responsiveClass:true,
+        responsive:{
+            0:{
+                items:1
+            },
+            600:{
+                items:1
+            },
+            1000:{
+                items:1
             }
-            #adsBanner2nd .owl-stage {
-                display:flex;
-                flex-direction:row;
-                align-items:end;
-            }
-            #adsBanner2nd svg, #adsBanner2nd span{width:auto;display:inline;}
-            #adsBanner2nd .owl-nav{
-            	position: absolute;
-                width: 100%;
-                top: calc(50% - 16px);
-                height: 0;
-            }
-            .ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                width:32px;
-                height:32px;
-                color:#fff;
-                background: #fff;
-                border-radius:50%;
-                font-size:14px;
-                cursor:pointer;
-                box-shadow:0 4px 25px rgba(0,0,0,0.07);
-                position: absolute;
-                z-index: 2;
-            }
-            .ads-banner-2nd-owl-next{right:-10px;}
-            .ads-banner-2nd-owl-prev{left:-10px;}
-            }
-            #adsBanner2nd .owl-item{
-                width:277px;
-            }
-            #adsBanner2nd .item-box {
-              width:100%;
-              display:flex;
-              flex-direction: column;
-              color:#fff;
-            }
-            #adsBanner2nd .item-box h3{height:35px;}
-            #adsBanner2nd .owl-stage-outer{
-                padding-top:8px;
-                padding-bottom:15px;
-            }
-            .ads-banner-2nd-card{
-                background:#fff;
-                border-radius:16px;
-                padding:7px;
-                box-shadow:0 4px 25px rgba(0,0,0,0.07);
-                color:#2D3748;
-            }
-            @media(max-width:1000px){
-                #adsBanner2nd .owl-carousel{
-                    margin:auto;
-                }
-                .ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{display:none;}
-            }
-            @media(max-width:480px){
-                #adsBanner2nd .owl-carousel{
-                    width:95% !important;
-                }
-                .ads-banner-2nd-owl-next,.ads-banner-2nd-owl-prev{display:none;}
-            }
-            </style>
-            <script type="text/javascript">
-                jQuery(document).ready(function(){
-                  jQuery("#adsBanner2nd").owlCarousel({
-                    rtl:true,
-                    loop:true,
-                    margin:30,
-                    nav:true,
-                    navText:['<div class="ads-banner-2nd-owl-next"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.57812 11L6.57812 6L1.57812 1" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>','<div class="ads-banner-2nd-owl-prev"><svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.4375 1L1.4375 6L6.4375 11" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'],
-                    dots:false,
-                    responsiveClass:true,
-                    responsive:{
-                        0:{
-                            items:1
-                        },
-                        600:{
-                            items:1
-                        },
-                        1000:{
-                            items:1
-                        }
-                    }
-                  });
-                });
-            </script>
+        }
+      });
+    });
+</script>
 <?php }elseif(count($ads_banner_2nd) == 1){ ?>
     <div class="ads-banner-2nd-image">
         <a href="<?php echo $ads_banner_2nd['item-0']['ads-banner-2nd-link']; ?>" title="<?php echo $ads_banner_2nd['item-0']['ads-banner-2nd-title']; ?>"><img src="<?php echo $ads_banner_2nd['item-0']['ads-banner-2nd-img']; ?>" alt="<?php echo $ads_banner_2nd['item-0']['ads-banner-2nd-title']; ?>"></a>
@@ -1947,25 +2075,9 @@ function ads_banner_2nd_func($atts){
 <?php } ?>
         </div>
     </div>
+
 <?php
 }
-
-
-
-function hide_based_onhref() {
-    ?>
-    <script type="text/javascript">
-    jQuery(document).ready(function($) {
-        $('.pack-course-info  .col-lg-2 a').each(function() {
-            if (!$(this).attr('href') || $(this).attr('href') === '') {
-                $(this).closest('.pack-course-info  .col-lg-2').hide();
-            }
-        });
-    });
-    </script>
-    <?php
-}
-add_action('wp_footer', 'hide_based_onhref');
 
 
 /**
@@ -1977,29 +2089,62 @@ function ir_phone_format( $phone_formats ) {
     $phone_formats['ir'] = array(
         'label'       => 'شماره موبایل ایران',
         'mask'        => '',
-        'regex'       => '/^09(0[0-9]|1[0-9]|2[0-9]|3[0-9]|9[0-9])\-?[0-9]{3}\-?[0-9]{4}$/',
+        'regex'       => '/09(0[0-9]|1[0-9]|9[0-9]|3[0-9]|2[0-9])-?[0-9]{3}-?[0-9]{4}/',
         'instruction' => 'شماره وارد شده صحیح نمی‌باشد',
     );
  
     return $phone_formats;
 }
 
-add_filter('gform_field_validation', 'custom_phone_validation', 10, 4);
-function custom_phone_validation($result, $value, $form, $field) {
-    if ($field->type == 'phone' && strlen(preg_replace('/\D/', '', $value)) > 11) {
-        $result['is_valid'] = false;
-        $result['message'] = 'لطفاً شماره موبایل معتبر وارد کنید (حداکثر ۱۱ رقم).';
-    }
-    return $result;
+function restrict_numbers_script() {
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function() {
+        function restrictNumbers(input) {
+            const allowedChars = /^[0-9]*$/;
+            if (!allowedChars.test(input.value)) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            }
+        }
+
+        // Apply the function to input fields with specific IDs
+        jQuery('#input_1_2, #input_3_2, #input_2_2').on('input', function() {
+            restrictNumbers(this);
+        });
+    });
+    </script>
+    <?php
 }
+add_action('wp_footer', 'restrict_numbers_script');
+
+
+function update_view_more_button_url(){
+    if(is_singular('teacher')){
+        $post_id = get_the_ID();
+        ?>
+        <script>
+            jQuery.fn.appendAttr = function(attrName, suffix) {
+                this.attr(attrName, function(i, val) {
+                    return val + suffix;
+                });
+                return this;
+            };
+            jQuery(document).ready(function(){
+                let teacherID = "<?php echo $post_id ?>";
+                jQuery('.sa-view-more a').appendAttr('href','#'+teacherID);
+            });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer','update_view_more_button_url');
 
 add_shortcode('add_to_cart_button_course', 'add_to_cart_button_course_func');
 function add_to_cart_button_course_func($atts){
-    $checkout_page_url = site_url().'/course-checkout';
+    $checkout_page_url = 'https://mid1.tamland.ir/course-checkout';
     $post = get_post();
     $item_name = str_replace("|","-",$post->post_title);
     $secound_title = str_replace("|","-", get_post_meta($post->ID, 'secound-title', true));
-    $post_type = get_post_type($post->ID);
     $course_type = get_post_meta( $post->ID, 'course-type', true );
     
     //Creating item array.
@@ -2008,30 +2153,23 @@ function add_to_cart_button_course_func($atts){
             'is_archive' => false,
     		'teachers_course_id' => ''
     ), $atts );
-    if($course_type == 'normal-course' || $course_type == 'course-pack' || ($course_type == 'multi-teacher' && $button_atts['is_archive'] == true) || $post_type == 'exams'){
+    if($course_type == 'normal-course' || $course_type == 'course-pack' || ($course_type == 'multi-teacher' && $button_atts['is_archive'] == true)){
         // Get Prices
         $price = get_post_meta( $post->ID, 'price_tax', true );
-        $price_sale = get_post_meta( $post->ID, 'price_sale_tax', true );
+        //$price_sale = get_post_meta( $post->ID, 'price_sale_tax', true );
         $region_price = get_post_meta( $post->ID, 'region-price', true );
         $course_id_lms = get_post_meta( $post->ID, 'course-id-lms', true );
         if($region_price !=""){
             for( $i = 0; $i < 1; $i++ ){
-                if($region_price['item-'.$i]['region-price-sale-tax'] != ""){
-                    $items[] = array( 'price' => $region_price['item-'.$i]['region-price-sale-tax'], 'text' => $item_name.' (با تخفیف)');
-                }else{
-                    $items[] = array( 'price' => $region_price['item-'.$i]['region-price-tax'], 'text' => $item_name);
-                }
+                $items[] = array( 'price' => $region_price['item-'.$i]['region-price-tax'], 'text' => $item_name);
             }
         }else{
-            if($price_sale == ""){
-                $items[] = array( 'price' => $price, 'text' => $item_name.' '.$secound_title);
-            }else{
-                $items[] = array( 'price' => $price_sale, 'text' => $item_name.' (با تخفیف)');
-            }
+            $items[] = array( 'price' => $price, 'text' => $item_name.' '.$secound_title);
         }
         
     }elseif($course_type == 'multi-teacher'){
         $teachers_course = get_post_meta( $post->ID, 'teachers-course', true );
+        $teacher_course_id = $button_atts['teachers_course_id'];
         foreach( $teachers_course as $teachers_course_item ){
             if($teachers_course_item['teacher-course-name'] === $button_atts['teachers_course_id']){
                 $course_id_lms = $teachers_course_item['teacher-course-id-lms'];
@@ -2045,7 +2183,7 @@ function add_to_cart_button_course_func($atts){
                     }
                 }else{
                     if($teachers_course_item['teacher-course-price-sale-tax'] == ""){
-                        $items[] = array( 'price' => $teachers_course_item['teacher-course-price-tax'], 'text' => $item_name.''.$secound_title.' '.get_the_title($teachers_course_item['teacher-course-name']), 'isSelected' => true);
+                        $items[] = array( 'price' => $teachers_course_item['teacher-course-price-tax'], 'text' => $item_name.' '.$secound_title.' '.get_the_title($teachers_course_item['teacher-course-name']), 'isSelected' => true);
                     }else{
                        $items[] = array( 'price' => $teachers_course_item['teacher-course-price-sale-tax'], 'text' => $item_name.' '.get_the_title($teachers_course_item['teacher-course-name']).' (با تخفیف)', 'isSelected' => true);
                     }
@@ -2053,14 +2191,13 @@ function add_to_cart_button_course_func($atts){
             }
         }
     }
-    
     $token = hash_hmac('sha256', $course_id_lms . '|' . $items[0]["price"], $secret_key);
     ?>
     <form method="post" action="<?php echo $checkout_page_url; ?>">
         <?php
         if($button_atts['is_archive'] == true){
             ?>
-            <button type="submit" class="add-to-cart-button cart-icon"><img src="https://mid1.tamland.ir/wp-content/uploads/2025/02/card.svg"></button>
+            <button type="submit" class="add-to-cart-button cart-icon"><img src="https://mid2.tamland.ir/wp-content/uploads/2024/10/Buy.svg"></button>
             <?php
         }else{
             ?>
@@ -2068,6 +2205,8 @@ function add_to_cart_button_course_func($atts){
             <?php
         }
         ?>
+        <input type="hidden" name="post_id" value="<?php echo $post->ID; ?>">
+        <input type="hidden" name="teacher_course_id" value="<?php echo $teacher_course_id; ?>">
         <input type="hidden" name="course_id_lms" value="<?php echo $course_id_lms; ?>">
         <input type="hidden" name="ref_url_payment" value="<?php the_permalink(); ?>">
         <?php
@@ -2101,1163 +2240,147 @@ function add_to_cart_button_course_func($atts){
     </form>
     <?php
 }
-add_filter('gform_pre_render_4', 'validate_secure_token');
 
-function validate_secure_token($form) {
-     if(!is_admin()){
-        if (isset($_GET['gf_token'])) {
-            $draft_token = sanitize_text_field($_GET['gf_token']);
-            // دریافت مقادیر پیش‌نویس مرتبط با توکن
-            $draft_values = GFFormsModel::get_draft_submission_values($draft_token);
-            // بررسی اینکه داده‌ها موجود هستند
-            if (!empty($draft_values['submission'])) {
-                // دیکد کردن JSON درون کلید submission
-                $submission = json_decode($draft_values['submission'], true);
-                $input_7 = explode("|", $submission['submitted_values']['7']);
-                if(!isset($input_7[1], $submission['submitted_values']['8'], $submission['submitted_values']['26'])){
-                    die('اطلاعات ناقص است');
-                }
-                
-                $expected_token = hash_hmac('sha256', $submission['submitted_values']['8'] . '|' . $input_7[1], $secret_key);
-
-                if ($submission['submitted_values']['26'] !== $expected_token) {
-                    die('درخواست شما نامعتبر است');
-                }
-            }
-        }else{
-            // بررسی وجود مقادیر در POST
-            if (!isset($_POST['course_id_lms'], $_POST['course_price_0'], $_POST['secure_token'])) {
-                die('اطلاعات ناقص است');
-            }
-        
-            $expected_token = hash_hmac('sha256', $_POST['course_id_lms'] . '|' . $_POST['course_price_0'], $secret_key);
-        
-            if ($_POST['secure_token'] !== $expected_token) {
-                die('درخواست شما نامعتبر است');
-            }
-        }
-    
- }
-    return $form;
-    
-}
-
-add_filter( 'gform_pre_render_4', 'add_courses_fields' );
+add_filter( 'gform_pre_render_5', 'add_courses_fields' );
  
 //Note: when changing choice values, we also need to use the gform_pre_validation so that the new values are available when validating the field.
-add_filter( 'gform_pre_validation_4', 'add_courses_fields' );
+add_filter( 'gform_pre_validation_5', 'add_courses_fields' );
  
 //Note: when changing choice values, we also need to use the gform_admin_pre_render so that the right values are displayed when editing the entry.
-add_filter( 'gform_admin_pre_render_4', 'add_courses_fields' );
- 
+add_filter( 'gform_admin_pre_render_5', 'add_courses_fields' );
+
 //Note: this will allow for the labels to be used during the submission process in case values are enabled
-add_filter( 'gform_pre_submission_filter_4', 'add_courses_fields' );
+add_filter( 'gform_pre_submission_filter_5', 'add_courses_fields' );
 function add_courses_fields( $form ) {
- if(!is_admin()){
-    if ( $form["id"] != 4 ) {
+ 
+    if ( $form["id"] != 5 ) {
         return $form;
     }
+    $items_number = $_POST['course_numbers'];
+    $course_id_lms = $_POST['course_id_lms'];
+    $course_type = $_POST['course_type'];
+    $ref_url_payment = $_POST['ref_url_payment'];
+    $items = array();
     
-    if (isset($_GET['gf_token'])) {
-        $draft_token = sanitize_text_field($_GET['gf_token']);
-        // دریافت مقادیر پیش‌نویس مرتبط با توکن
-        $draft_values = GFFormsModel::get_draft_submission_values($draft_token);
-        // بررسی اینکه داده‌ها موجود هستند
-        if (!empty($draft_values['submission'])) {
-            ?>
-            <style>
-                .tamland-schools{
-                    display:none;
-                }
-            </style>
-            <?php
-            // دیکد کردن JSON درون کلید submission
-            $submission = json_decode($draft_values['submission'], true);
-            foreach ( $form['fields'] as &$field ) {
-                 if($field->id == 7){
-                    $input_7 = explode("|", $submission['submitted_values'][$field->id]);
-                    $items[] = array( 'value' => $input_7[0], 'price' => $submission['submitted_values']['6'], 'text' => $input_7[0], 'isSelected' => true);
-                    foreach ( $form['fields'] as &$field ) {
-                        if ( $field->id == 7 ) {
-                            $field->choices = $items;
-                        }
-                    }
-                 }else{
-                     $field->defaultValue = $submission['submitted_values'][$field->id];
-                 }
-            }
-        }
-    }else{
-        if (!empty($_POST)) {
-            ?>
-            <style>
-                .tamland-schools{
-                    display:none;
-                }
-            </style>
-            <?php
-            
-        if(isset($_POST['course_numbers'])){
-            $items_number = (int)$_POST['course_numbers'];
-        }else{
-           $items_number = 1;
-        }
-        
-        if(isset($_POST['course_id_lms'])){
-            $course_id_lms = $_POST['course_id_lms'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 8 ) {
-                    $field->defaultValue = $course_id_lms;
-                }
-            }
-        }else{
-            $course_id_lms = $_POST['input_8'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 8 ) {
-                    $field->defaultValue = $course_id_lms;
-                }
-            }
-        }
-        
-        if(isset($_POST['course_type'])){
-            $course_type = $_POST['course_type'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 9 ) {
-                    $field->defaultValue = $course_type;
-                }
-            }
-        }else{
-            $course_type = $_POST['input_9'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 9 ) {
-                    $field->defaultValue = $course_type;
-                }
-            }
-        }
-        
-        if(isset($_POST['ref_url_payment'])){
-            $ref_url_payment = $_POST['ref_url_payment'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 10 ) {
-                    $field->defaultValue = $ref_url_payment;
-                }
-            }
-            ?>
-            <script>
-                jQuery(document).ready(function(){
-                    localStorage.setItem("refUrlPayment", "<?php echo $ref_url_payment; ?>");
-                });
-            </script>
-            <?php
-        }else{
-            $ref_url_payment = $_POST['input_10'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 10 ) {
-                    $field->defaultValue = $ref_url_payment;
-                }
-            }
-        }
-        if(isset($_POST['course_numbers'])){
-            $items = array();
-        
-            for( $i = 0; $i < $items_number; $i++ ){
-                $items[] = array( 'value' => $_POST['course_name_'.$i], 'price' => $_POST['course_price_'.$i], 'text' => $_POST['course_name_'.$i], 'isSelected' => true);
-            }
-            
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 7 ) {
-                    $field->choices = $items;
-                }
-            }
-        }else{
-            $input_7 = explode("|", $_POST['input_7']);
-            $items[] = array( 'value' => $input_7[0], 'price' => $_POST['input_6'], 'text' => $input_7[0], 'isSelected' => true);
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 7 ) {
-                    $field->choices = $items;
-                }
-            }
-        }
-        
-        if(isset($_POST['utm_source'])){
-            $utm_source = $_POST['utm_source'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 11 ) {
-                    $field->defaultValue = $utm_source;
-                }
-            }
-        }else{
-            $utm_source = $_POST['input_11'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 11 ) {
-                    $field->defaultValue = $utm_source;
-                }
-            }
-        }
-        
-        if(isset($_POST['utm_medium'])){
-            $utm_medium = $_POST['utm_medium'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 12 ) {
-                    $field->defaultValue = $utm_medium;
-                }
-            }
-        }else{
-            $utm_medium = $_POST['input_12'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 12 ) {
-                    $field->defaultValue = $utm_medium;
-                }
-            }
-        }
-        
-        if(isset($_POST['utm_campaign'])){
-            $utm_campaign = $_POST['utm_campaign'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 13 ) {
-                    $field->defaultValue = $utm_campaign;
-                }
-            }
-        }else{
-            $utm_campaign = $_POST['input_13'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 13 ) {
-                    $field->defaultValue = $utm_campaign;
-                }
-            }
-        }
-        
-        if(isset($_POST['utm_term'])){
-            $utm_term = $_POST['utm_term'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 14 ) {
-                    $field->defaultValue = $utm_term;
-                }
-            }
-        }else{
-            $utm_term = $_POST['input_14'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 14 ) {
-                    $field->defaultValue = $utm_term;
-                }
-            }
-        }
-        
-        if(isset($_POST['utm_content'])){
-            $utm_content = $_POST['utm_content'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 15 ) {
-                    $field->defaultValue = $utm_content;
-                }
-            }
-        }else{
-            $utm_content = $_POST['input_15'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 15 ) {
-                    $field->defaultValue = $utm_content;
-                }
-            }
-        }
-        
-        if(isset($_POST['secure_token'])){
-            $secure_token = $_POST['secure_token'];
-            
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 26 ) {
-                    $field->defaultValue = $secure_token;
-                }
-            }
-        }else{
-            $secure_token = $_POST['input_26'];
-            foreach ( $form['fields'] as &$field ) {
-                if ( $field->id == 26 ) {
-                    $field->defaultValue = $secure_token;
-                }
-            }
-        }
-        
-    } else {
-        ?>
-        <style>
-            #gform_wrapper_4, .vpnalert, .viewcourselink{
-                display:none !important;
-            }
-            #gradesLink{
-                display:flex;
-            }
-            .view-course-form{
-                display:none;
-            }
-        </style>
-        <div>
-            <h3>هنوز هیچ دوره‌ای انتخاب نشده!</h3>
-           <img src="https://mid1.tamland.ir/wp-content/uploads/2025/01/000-1.webp"> 
-           <p>برای خرید دوره مورد نظر، پایه تحصیلی خود را انتخاب کنید</p>
-        </div>
-        <?php
+    for( $i = 0; $i < $items_number; $i++ ){
+        $items[] = array( 'value' => $_POST['course_name_'.$i], 'price' => $_POST['course_price_'.$i], 'text' => $_POST['course_name_'.$i], 'isSelected' => true);
     }
+    //Adding items to field id 8. Replace 8 with your actual field id. You can get the field id by looking at the input name in the markup.
+    foreach ( $form['fields'] as &$field ) {
+        if ( $field->id == 7 ) {
+            $field->choices = $items;
+        }
+        if ( $field->id == 8 ) {
+            $field->defaultValue = $course_id_lms;
+        }
+        if ( $field->id == 9 ) {
+            $field->defaultValue = $course_type;
+        }
+        if ( $field->id == 10 ) {
+            $field->defaultValue = $ref_url_payment;
+        }
     }
-    
-    
- } 
     
     return $form;
- 
 }
 
 
-add_action('gform_after_submission_4', 'post_to_third_party', 10, 2);
-
-function post_to_third_party($entry, $form) {
-    $entry_id = $entry['id'];
-    //error_log('Entry: ' . print_r($entry, true));
-    $amount = calculate_amount($entry);
-    if($entry['9'] == "دوره معمولی" || $entry['9'] == "چند استاده" || $entry['9'] == "آزمون"){
-        $course_type_lms = 1;
-    }elseif($entry['9'] == "بسته"){
-        $course_type_lms = 2;
-    }
-    $lmsdata = array(
-	    "Name" => $entry['1'],
-		"Mobile" => $entry['2'],
-		"CourseId" => (int)$entry['8'],
-		"Price" => $amount,
-		"Status" => 10,
-		"TrackingCode" => "",
-		"Type" => (int)$course_type_lms,
-	    "PaymentDate" => $entry['date_created'],
-		"WPCode" => (int)$entry['id'],
-		"MaskedCardNumber" => "",
-		"UtmSource" => isset($entry[11]) ? $entry[11] : "",
-		"UtmMedium" => isset($entry[12]) ? $entry[12] : "",
-		"UtmChannel" => isset($entry[13]) ? $entry[13] : ""
-	);
-                    
-	// Encode the data as a JSON string
-	$lmsdatas = json_encode($lmsdata);
-    error_log('(After Sub) LMS Data Encoded: ' . print_r($lmsdatas, true));
+add_action( 'gform_after_submission_5', 'post_to_third_party', 10, 2 );
+function post_to_third_party( $entry, $form ) {
+	$entry_id = $entry['id'];
+	gform_update_meta( $entry_id, 'payment_status', 'Processing');
+    $ReturnPath = site_url().'/return-payment-gateway?entry_id='.$entry_id;
+    $data = array(
+						"CorporationPin" => "3F20B9936DD04AE6A9A7AFB98887A42D",
+						"Amount" => rgar( $entry, '6' ).'0',
+						"OrderId" => $entry_id,
+						"CallBackUrl" => $ReturnPath
+					);
+					
+					// Encode the data as a JSON string
+					$postFields = json_encode($data);
+					
+                    //trigger exception in a "try" block
+                    try {
+                        $curl = curl_init();
+					
+    					curl_setopt_array($curl, array(
+    					CURLOPT_URL => 'https://pna.shaparak.ir/mhipg/api/Payment/NormalSale',
+    					CURLOPT_RETURNTRANSFER => true,
+    					CURLOPT_ENCODING => '',
+    					CURLOPT_MAXREDIRS => 10,
+    					CURLOPT_TIMEOUT => 0,
+    					CURLOPT_FOLLOWLOCATION => true,
+    					CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    					CURLOPT_CUSTOMREQUEST => 'POST',
+    					CURLOPT_POSTFIELDS =>$postFields,
+    					CURLOPT_HTTPHEADER => array(
+    						'Content-Type: application/json',
+    						'Cookie: cookiesession1=678B28A8A9990742D7412CE00BD0687F'
+    					    ),
+    					));
+    					
+    					$response = curl_exec($curl);
+    					
+    					curl_close($curl);
     
-	$curl2 = curl_init();
-    curl_setopt_array($curl2, array(
-		CURLOPT_URL => 'https://api.tamland.ir/api/payment/savePayment',
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_ENCODING => '',
-		CURLOPT_MAXREDIRS => 10,
-		CURLOPT_TIMEOUT => 0,
-	    CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST => 'POST',
-		CURLOPT_POSTFIELDS =>$lmsdatas,
-		CURLOPT_HTTPHEADER => array(
-			'Content-Type: application/json',
-			'Cookie: cookiesession1=678B28A8A9990742D7412CE00BD0687F'
-		),
-	));
-
-	$lmsresponses = curl_exec($curl2);
-    error_log("lmsresponses: " . $lmsresponses);               
-    if ($lmsresponses === false) {
-        error_log("(After Sub) cURL error: " . curl_error($curl2));
-    }
+                        $generateSignedPurchaseToken = json_decode($response);
+                        $token=$generateSignedPurchaseToken->token;
                         
-	curl_close($curl2);
-    
-    
-    $return_path = site_url('/return-payment-gateway?entry_id=' . $entry_id);
-
-    gform_update_meta($entry_id, 'payment_status', 'Processing');
-    if($amount !== '0'){
-        $data = prepare_payment_data($entry_id, $amount, $return_path);
-        $response = send_payment_request($data);
-        if ($response && isset($response->token)) {
-            redirect_to_payment($response->token);
-        } else {
-            handle_payment_error($response);
-        }
-    }else{
-        wp_redirect($return_path);
-        exit;
-    }
+                       echo "<script>window.location.href = 'https://pna.shaparak.ir/mhui/home/index/$token';</script>";
+                    }
+                    
+                    //catch exception
+                    catch(Exception $e) {
+                      echo 'Message: ' .$e->getMessage();
+                    }
+					
 }
-
-function calculate_amount($entry) {
-    if($entry['6'] == '0'){ 
-        $amount_field = $entry['6'];
-        return $amount_field; // فرض کنید مقادیر همیشه عدد هستند
-    }elseif($entry['18'] == '0'){
-        $amount_field = $entry['18'];
-        return $amount_field; // فرض کنید مقادیر همیشه عدد هستند
-    }else{
-        $amount_field = $entry['18'] ?: $entry['6'];
-        return $amount_field . '0'; // فرض کنید مقادیر همیشه عدد هستند
-    }
-}
-
-function prepare_payment_data($entry_id, $amount, $return_path) {
-    return array(
-        "CorporationPin" => "3F20B9936DD04AE6A9A7AFB98887A42D",
-        "Amount" => $amount,
-        "OrderId" => $entry_id,
-        "CallBackUrl" => esc_url($return_path)
-    );
-}
-
-function send_payment_request($data) {
-    $curl = curl_init();
-
-    $post_fields = json_encode($data);
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://pna.shaparak.ir/mhipg/api/Payment/NormalSale',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $post_fields,
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json',
-            'Cookie: cookiesession1=678B28A8A9990742D7412CE00BD0687F'
-        ),
-    ));
-
-    $response = curl_exec($curl);
-    $error = curl_error($curl);
-    curl_close($curl);
-
-    if ($error) {
-        error_log('Curl Error: ' . $error); // ثبت خطا در لاگ وردپرس
-        return null;
-    }
-
-    return json_decode($response);
-}
-
-function redirect_to_payment($token) {
-    $payment_url = 'https://pna.shaparak.ir/mhui/home/index/' . urlencode($token);
-    echo "<script>window.location.href = '" . esc_url($payment_url) . "';</script>";
-    exit;
-}
-
-function handle_payment_error($response) {
-    error_log('Payment Error: ' . print_r($response, true)); // ثبت خطای احتمالی
-    wp_die('یک خطا هنگام پروسه پرداخت شما صورت گرفته است. لطفا مجدد تلاش کنید.');
-}
-
-add_filter('gform_entry_meta', 'custom_entry_meta', 10, 2);
-
-function custom_entry_meta($entry_meta, $form_id) {
-    // افزودن شناسه پرداخت درگاه پرداخت به متادیتاهای ورودی
+add_filter( 'gform_entry_meta', 'custom_entry_meta', 10, 2 );
+function custom_entry_meta( $entry_meta, $form_id ) {
+    // data will be stored with the meta key named score
+    // label - entry list will use Score as the column header
+    // is_numeric - used when sorting the entry list, indicates whether the data should be treated as numeric when sorting
+    // is_default_column - when set to true automatically adds the column to the entry list, without having to edit and add the column for display
+    // update_entry_meta_callback - indicates what function to call to update the entry meta upon form submission or editing an entry
     $entry_meta['gateway_transition_id'] = array(
-        'label'             => 'شناسه پرداخت درگاه پرداخت',
-        'is_numeric'        => true,
-        'is_default_column' => true,
+        'label' => 'شناسه پرداخت درگاه پرداخت',
+        'is_numeric' => true,
+        //'update_entry_meta_callback' => 'update_entry_meta',
+        'is_default_column' => true
     );
-
-    // افزودن شماره کارت به متادیتاهای ورودی
-    $entry_meta['card_number'] = array(
-        'label'             => 'شماره کارت',
-        'is_numeric'        => false,
-        'is_default_column' => true,
-    );
-
+ 
     return $entry_meta;
 }
 
 
-function update_view_more_button_url(){
-    if(is_singular('teacher')){
-        $post_id = get_the_ID();
-        ?>
-        <script>
-            jQuery.fn.appendAttr = function(attrName, suffix) {
-                this.attr(attrName, function(i, val) {
-                    return val + suffix;
-                });
-                return this;
-            };
-            jQuery(document).ready(function(){
-                let teacherID = "<?php echo $post_id ?>";
-                jQuery('.sa-view-more a').appendAttr('href','#'+teacherID);
-            });
-        </script>
-        <?php
-    }
-}
-add_action('wp_footer','update_view_more_button_url');
-
-
-
-/**
- * add iframe html support
- */
-add_filter( 'wp_kses_allowed_html', function ( $tags, $context ) {
-if ( 'post' === $context ) {
-$tags['iframe'] = array(
-'src' => true,
-'width' => true,
-'height' => true,
-'width' => true, 
-'frameborder' => true,
-'allowtransparency' => true,
-'allow' => true,
-);
-}
-return $tags;
-},10,2);
-
-
-//add_action( 'phpmailer_init', 'my_phpmailer_smtp' );
-
-add_filter('use_block_editor_for_post', '__return_false');
-// Disable Gutenberg for widgets.
-add_filter( 'use_widgets_block_editor', '__return_false' );
-
-add_action( 'wp_enqueue_scripts', function() {
-    // Remove CSS on the front end.
-    wp_dequeue_style( 'wp-block-library' );
-
-    // Remove Gutenberg theme.
-    wp_dequeue_style( 'wp-block-library-theme' );
-
-    // Remove inline global CSS on the front end.
-    wp_dequeue_style( 'global-styles' );
-}, 20 );
-
-
-add_shortcode('view_course_form', 'view_course_form_func');
-function view_course_form_func(){
-    if(isset($_POST['ref_url_payment'])){
-        $ref_url_payment = $_POST['ref_url_payment'];
-    }else{
-        $ref_url_payment = $_POST['input_10'];
-    }
-    echo '<a href="'.$ref_url_payment.'" class="view-course-form" target="_blank">مشاهده دوره</a>';
-    echo '<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelector("#tamlandLogo a").href = "'.$ref_url_payment.'";
-        });
-    </script>';
-}
-
-
-function export_gravity_forms_entries() {
-    $form_id = 4; // Replace with your form ID
-
-    // Set the start and end time for the day
-    $start_time = strtotime('yesterday midnight'); // 00:00 of yesterday
-    $end_time = strtotime('tomorrow midnight') - 1; // 23:59:59 of today
-
-    // Define the search criteria for entries within the day
-    $search_criteria = [
-        'status' => 'active', // Fetch only active entries
-        'field_filters' => [],
-        'start_date' => date('Y-m-d H:i:s', $start_time),
-        'end_date' => date('Y-m-d H:i:s', $end_time),
-    ];
-    
-    // Set paging to get all records (large number to ensure all are retrieved)
-    $paging = [
-        'offset' => 0,  // Start from the first record
-        'page_size' => 1000 // Set a large limit (change as needed)
-    ];
-    
-    // Fetch the entries
-    $entries = GFAPI::get_entries($form_id, $search_criteria, null, $paging);
-
-    if (!empty($entries)) {
-        $csv_data = [];
-
-        // Collect entry headers
-        $csv_data[] = array_keys($entries[0]);
-
-        // Collect entry values
-        foreach ($entries as $entry) {
-            $csv_data[] = array_values($entry);
-        }
-
-        // Create the CSV file
-        $filename = 'gravity_forms_entries_' . date('Y-m-d') . '_' . date('H-i') . '.csv';
-        $file_path = WP_CONTENT_DIR . '/purchased-form-entries/' . $filename;
-
-        // Ensure the directory exists
-        if (!file_exists(WP_CONTENT_DIR . '/purchased-form-entries')) {
-            mkdir(WP_CONTENT_DIR . '/purchased-form-entries', 0755, true);
-        }
-
-        $file = fopen($file_path, 'w');
-
-        // Add UTF-8 BOM to ensure proper encoding
-        fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-        foreach ($csv_data as $row) {
-            fputcsv($file, $row);
-        }
-
-        fclose($file);
-    }
-}
-
-// Hook the export function to the cron event
-add_action('gravity_forms_entries_export_event', 'export_gravity_forms_entries');
-
-// Add custom cron intervals
-function custom_cron_intervals($schedules) {
-    $schedules['daily_midnight'] = array(
-        'interval' => 86400, // 24 hours in seconds
-        'display'  => __('Daily at Midnight')
+function is_mobile_device() {
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    $mobile_agents = array(
+        'Android', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Mobile', 'BlackBerry'
     );
-    return $schedules;
-}
-add_filter('cron_schedules', 'custom_cron_intervals');
 
-
-// Schedule the event with the custom interval
-if (!wp_next_scheduled('gravity_forms_entries_export_event')) {
-    wp_schedule_event(strtotime('tomorrow midnight'), 'daily_midnight', 'gravity_forms_entries_export_event');
-}
-/*
-// Clear the scheduled event
-function remove_gravity_forms_entries_export_cron() {
-    $timestamp = wp_next_scheduled('gravity_forms_entries_export_event');
-    if ($timestamp) {
-        wp_unschedule_event($timestamp, 'gravity_forms_entries_export_event');
-    }
-}
-add_action('init', 'remove_gravity_forms_entries_export_cron');
-*/
-add_filter( 'gform_incomplete_submission_pre_save', 'modify_incomplete_submission', 10, 3 );
-function modify_incomplete_submission( $submission_json, $resume_token, $form){
-    //change the user first name to Test in the saved data
-    $updated_json = json_decode( $submission_json );
-    $name = urlencode($updated_json->submitted_values->{'1'});
-    $mobile = $updated_json->submitted_values->{'2'};
-    $courseId = $updated_json->submitted_values->{'8'};
-    $amount = $updated_json->submitted_values->{'6'};
-    $type = $updated_json->submitted_values->{'9'};
-    if($type == "دوره معمولی" || $type == "چند استاده" || $type == "آزمون"){
-        $course_type_lms = 1;
-    }elseif($type == "بسته"){
-        $course_type_lms = 2;
-    }
-    $utmSource = $updated_json->submitted_values->{'11'};
-    $utmMedium = $updated_json->submitted_values->{'12'};
-    $utmChannel = $updated_json->submitted_values->{'13'};
-    
-    $lmsdata = array(
-	    "Name" => $name,
-		"Mobile" => $mobile,
-		"CourseId" => (int)$courseId,
-		"Price" => $amount,
-		"Status" => 11,
-		"TrackingCode" => "",
-		"Type" => (int)$course_type_lms,
-	    "PaymentDate" => "",
-		"WPCode" => (int)$entry['id'],
-		"MaskedCardNumber" => "",
-		"UtmSource" => isset($utmSource) ? $utmSource : "",
-		"UtmMedium" => isset($utmMedium) ? $utmMedium : "",
-		"UtmChannel" => isset($utmChannel) ? $utmChannel : ""
-		
-	);
-                    
-	// Encode the data as a JSON string
-	$lmsdatas = json_encode($lmsdata);
-    error_log('(Save and Continue) LMS Data Encoded: ' . print_r($lmsdatas, true));
-    
-	$curl2 = curl_init();
-    curl_setopt_array($curl2, array(
-		CURLOPT_URL => 'https://api.tamland.ir/api/payment/savePayment',
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_ENCODING => '',
-		CURLOPT_MAXREDIRS => 10,
-		CURLOPT_TIMEOUT => 0,
-	    CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		CURLOPT_CUSTOMREQUEST => 'POST',
-		CURLOPT_POSTFIELDS =>$lmsdatas,
-		CURLOPT_HTTPHEADER => array(
-			'Content-Type: application/json',
-			'Cookie: cookiesession1=678B28A8A9990742D7412CE00BD0687F'
-		),
-	));
-
-	$lmsresponses = curl_exec($curl2);
-                        
-    if ($lmsresponses === false) {
-        error_log("(Save and continue) cURL error: " . curl_error($curl2));
-    }
-                        
-	curl_close($curl2);
-	
-$curl = curl_init();
-
-curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://api.kavenegar.com/v1/6A67394D58385358526B4A2F3672373758307661362B622B5649506831745550/verify/lookup.json?receptor='.$mobile.'&token='.$resume_token.'&token10='.$name.'&template=paymentsavelink',
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_HTTPHEADER => array(
-    'Cookie: cookiesession1=678A8C407DF7C786E38447A80506772C'
-  ),
-));
-
-$response = curl_exec($curl);
-
-curl_close($curl);
-//echo $response;
-    
-    return $submission_json;
-}
-
-add_action('init', function() {
-    load_textdomain('happy-elementor-addons', WP_LANG_DIR . '/plugins/happy-elementor-addons-fa_IR.mo');
-});
-/*
-function course_checkout_page_script(){
-    ?>
-    <script type="text/javascript">
-    jQuery(document).ready(function () {
-        let discountClickCount = 0;
-        let totalPrice = {
-            text: "",
-            number: 0,
-        };
-        let finalPrice = {
-            text: "",
-            number: 0,
-        };
-
-        const resetPrice = () => {
-            finalPrice.number = totalPrice.number;
-            finalPrice.text = totalPrice.text;
-            jQuery('#input_4_6').val(finalPrice.text);
-            jQuery('#input_4_18').val(finalPrice.number);
-        };
-
-        const applyDiscountSuccess = (discountCode, discountAmount) => {
-            finalPrice.number = totalPrice.number - ((totalPrice.number * discountAmount) / 100);
-            finalPrice.text = finalPrice.number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " تومان";
-            jQuery('#input_4_6').val(finalPrice.text);
-            jQuery('#input_4_18').val(finalPrice.number);
-            jQuery('.discount-validate-message')
-                .html(`کد تخفیف <b>${discountCode}</b> با موفقیت اعمال شد<button type="button" class="del-discount-code"><i class="fa fa-times"></i></button>`)
-                .removeClass('not-valid d-none')
-                .addClass('valid');
-           setCookie("discountIsSet", "true", 9); // Expires in 9 minutes 
-        };
-
-        const applyDiscountFailure = (message) => {
-            resetPrice();
-            jQuery('.discount-validate-message')
-                .text(message)
-                .removeClass('valid d-none')
-                .addClass('not-valid');
-            setCookie("discountIsSet", "false", 9); // Expires in 9 minutes 
-        };
-
-        jQuery('#apply_discount').on('click', function () {
-            const mobile = jQuery('#input_4_2').val();
-            const discountCode = jQuery('#input_4_20').val();
-            const courseId = jQuery('#input_4_8').val();
-            const courseType = jQuery('#input_4_9').val();
-            let courseTypeNum = 0;
-
-            if (courseType === "دوره معمولی" || courseType === "چند استاده") {
-                courseTypeNum = 1;
-            } else if (courseType === "بسته") {
-                courseTypeNum = 2;
-            }
-
-            if (discountClickCount === 0) {
-                totalPrice.text = jQuery('#input_4_6').val();
-                totalPrice.number = parseInt(totalPrice.text.replace(/ تومان|,/g, ''));
-                discountClickCount++;
-            }
-
-            if (discountCode) {
-                fetch("https://api.tamland.ir/api/payment/checkDiscount", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        Mobile: mobile,
-                        CourseId: courseId,
-                        Type: courseTypeNum,
-                        DiscountCode: discountCode,
-                    }),
-                })
-                    .then((response) => response.json())
-                    .then((result) => {
-                        const dataVal = result['0'];
-                        switch (dataVal['status']) {
-                            case 0:
-                                applyDiscountSuccess(discountCode, dataVal['fldPercentage']);
-                                break;
-                            case 1:
-                                applyDiscountFailure('زمان کد تخفیف به پایان رسیده است');
-                                break;
-                            case 2:
-                                applyDiscountFailure('کد تخفیف وارد شده برای این دوره مجاز نمی‌باشد');
-                                break;
-                            case 3:
-                                applyDiscountFailure('کد تخفیف وارد شده نامعتبر است');
-                                break;
-                            case 4:
-                                applyDiscountFailure('تعداد استفاده از کد تخفیف بیشتر از حد مجاز است');
-                                break;
-                            default:
-                                console.error('وضعیت ناشناخته دریافت شد');
-                        }
-                    })
-                    .catch((error) => console.error('خطا در ارتباط با سرور:', error));
-            }
-        });
-
-        jQuery(document).on('click', '.del-discount-code', function () {
-            resetPrice();
-            jQuery('.discount-validate-message').removeClass('valid').addClass('d-none').empty();
-            setCookie("discountIsSet", "false", 9); // Expires in 5 minutes 
-        });
-    });
-</script>
-    <?php
-}
-add_action('wp_footer','course_checkout_page_script');
-*/
-add_action('wp_head', 'check_show_first_session_videos_page');
-function check_show_first_session_videos_page() {
-    if(is_page(8121)){
-        if(isset($_COOKIE["submited_first_session_videos_form"]) && $_COOKIE["submited_first_session_videos_form"] == "yes") {
-           ?>
-            <style>
-                .first-video-page-form-section{
-                    display:none !important;
-                }
-                .first-video-page-section{
-                    display:flex !important;
-                }
-            </style>
-            <?php 
+    foreach ($mobile_agents as $device) {
+        if (stripos($user_agent, $device) !== false) {
+            return true;
         }
-    }
-}
-
-add_action( 'gform_after_submission_9', 'show_first_session_videos', 10, 2 );
-function show_first_session_videos( $entry, $form ) {
-    setcookie("submited_first_session_videos_form", "yes", time() + (86400 * 30), "/"); // 86400 = 1 day
-    ?>
-    <style>
-        .first-video-page-form-section{
-            display:none !important;
-        }
-        .first-video-page-section{
-            display:flex !important;
-        }
-    </style>
-    <?php
-}
-
-//کد های مربوط به سرعت سایت 
-
-if (!is_user_logged_in() && !is_admin() && !defined('DOING_AJAX')) {
-    function remove_css_js_ver($src) {
-        return strpos($src, '?ver=') ? remove_query_arg('ver', $src) : $src;
-    }
-    add_filter('style_loader_src', 'remove_css_js_ver', 10, 2);
-    add_filter('script_loader_src', 'remove_css_js_ver', 10, 2);
-
-
-    add_action('init', function() {
-        remove_action('wp_head', 'rsd_link');
-        remove_action('wp_head', 'wlwmanifest_link');
-        remove_action('wp_head', 'wp_generator');
-        remove_action('wp_head', 'wp_shortlink_wp_head');
-        remove_action('wp_head', 'rest_output_link_wp_head');
-        remove_action('wp_head', 'print_emoji_detection_script', 7);
-        remove_action('admin_print_scripts', 'print_emoji_detection_script');
-        remove_action('wp_print_styles', 'print_emoji_styles');
-        remove_action('admin_print_styles', 'print_emoji_styles');
-        add_filter('the_generator', '__return_empty_string');
-    }, 11);
-
-
-    add_action('wp_enqueue_scripts', function() {
-        wp_deregister_script('wp-embed');
-    }, 100);
-
-
-    // ob_start(function($html) {
-    //     return preg_replace('/\s+/', ' ', $html);
-    // });
-
-
-    add_action('wp_head', function() {
-        echo '<link rel="preload" as="image" href="https://mid1.tamland.ir/wp-content/uploads/2025/04/load.webp" type="image/webp">' . "\n";
-    });
-
-
-    add_action('send_headers', function() {
-        $value = wp_is_mobile()
-            ? 'public, max-age=86400, must-revalidate'
-            : 'public, max-age=86400';
-        header("Cache-Control: $value");
-    });
-
-
-    add_filter('heartbeat_send', '__return_false');
-}
-
-function disable_feed() {
-    wp_die(__('No feed available.', 'textdomain'));
-}
-add_action('do_feed', 'disable_feed', 1);
-add_action('do_feed_rdf', 'disable_feed', 1);
-add_action('do_feed_rss', 'disable_feed', 1);
-add_action('do_feed_rss2', 'disable_feed', 1);
-add_action('do_feed_atom', 'disable_feed', 1);
-
-
-add_filter('the_generator', '__return_empty_string');
-
-
-remove_action('wp_head', 'rsd_link');
-remove_action('wp_head', 'wlwmanifest_link');
-
-
-add_action('init', function() {
-    add_filter('tiny_mce_plugins', function($plugins) {
-        return array_diff($plugins, ['wpemoji']);
-    });
-}, 9999);
-
-
-add_filter('gform_disable_css', '__return_true');
-add_filter('gform_disable_js', '__return_true');
-
-
-//loading
-
-
-function is_known_bot() {
-    if (!isset($_SERVER['HTTP_USER_AGENT'])) return false;
-    $bots = [
-        'Googlebot', 'Bingbot', 'Slurp', 'DuckDuckBot', 'YandexBot',
-        'facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'WhatsApp', 'TelegramBot'
-    ];
-    foreach ($bots as $bot) {
-        if (stripos($_SERVER['HTTP_USER_AGENT'], $bot) !== false) return true;
     }
     return false;
 }
 
-
-function enqueue_universal_lazyload_script() {
-    if (is_admin() || is_known_bot()) return;
-    ?>
-    <style>
-        .lazy-section-placeholder {
-            background: #f0f0f0;
-            margin: 1rem 0;
-            display: block;
-        }
-    </style>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const lazyElements = document.querySelectorAll('[class*="lazy-"], .hero-section');
-
-        lazyElements.forEach(el => {
-
-            const style = window.getComputedStyle(el);
-
-            const placeholder = document.createElement('div');
-            placeholder.className = 'lazy-section-placeholder';
-            placeholder.style.height = el.offsetHeight + 'px';
-            placeholder.style.width = el.offsetWidth + 'px';
-            placeholder.style.marginTop = style.marginTop;
-            placeholder.style.marginBottom = style.marginBottom;
-            placeholder.style.marginLeft = style.marginLeft;
-            placeholder.style.marginRight = style.marginRight;
-            placeholder.style.paddingTop = style.paddingTop;
-            placeholder.style.paddingBottom = style.paddingBottom;
-            placeholder.style.paddingLeft = style.paddingLeft;
-            placeholder.style.paddingRight = style.paddingRight;
-            placeholder.style.boxSizing = style.boxSizing;
-
-            el.style.display = 'none';
-            el.parentNode.insertBefore(placeholder, el);
-
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        el.style.display = '';
-                        placeholder.remove();
-                        obs.unobserve(el);
-                    }
-                });
-            }, { rootMargin: '0px 0px 200px 0px', threshold: 0.1 });
-
-            observer.observe(placeholder);
-        });
-    });
-    </script>
-    <?php
+function device_based_slider_shortcode() {
+    if (is_mobile_device()) {
+        // نمایش اسلایدر موبایل
+        return do_shortcode('[elementor-template id="12164"]');
+    } else {
+        // نمایش اسلایدر دسکتاپ
+        return do_shortcode('[elementor-template id="12157"]');
+    }
 }
-add_action('wp_footer', 'enqueue_universal_lazyload_script', 100);
+add_shortcode('device_based_slider', 'device_based_slider_shortcode');
 
-function enqueue_mobile_only_lazyload_script() {
-    if (is_admin() || is_known_bot()) return;
-    ?>
-    <style>
-        .lazy-section-placeholder {
-            background: #f0f0f0;
-            margin: 1rem 0;
-            display: block;
-        }
-    </style>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // فقط موبایل
-        if (!/Mobi|Android/i.test(navigator.userAgent)) return;
-
-        const lazyElements = document.querySelectorAll('[class*="lazy-"], .hero-section');
-
-        lazyElements.forEach(el => {
-            const style = window.getComputedStyle(el);
-
-            const placeholder = document.createElement('div');
-            placeholder.className = 'lazy-section-placeholder';
-            placeholder.style.height = el.offsetHeight + 'px';
-            placeholder.style.width = el.offsetWidth + 'px';
-            placeholder.style.marginTop = style.marginTop;
-            placeholder.style.marginBottom = style.marginBottom;
-            placeholder.style.marginLeft = style.marginLeft;
-            placeholder.style.marginRight = style.marginRight;
-            placeholder.style.paddingTop = style.paddingTop;
-            placeholder.style.paddingBottom = style.paddingBottom;
-            placeholder.style.paddingLeft = style.paddingLeft;
-            placeholder.style.paddingRight = style.paddingRight;
-            placeholder.style.boxSizing = style.boxSizing;
-
-            el.style.display = 'none';
-            el.parentNode.insertBefore(placeholder, el);
-
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        el.style.display = '';
-                        placeholder.remove();
-                        obs.unobserve(el);
-                    }
-                });
-            }, { rootMargin: '0px 0px 200px 0px', threshold: 0.1 });
-
-            observer.observe(placeholder);
-        });
-    });
-    </script>
-    <?php
-}
-add_action('wp_footer', 'enqueue_mobile_only_lazyload_script', 100);
-
-
-//loading end
-
-
-function add_elementor_responsive_js() {
-    ?>
-    <script>
-    (function() {
-        function getDevice() {
-
-            var w = window.innerWidth;
-            if (w >= 1025) return 'desktop';
-            if (w >= 768) return 'tablet';
-            return 'phone';
-        }
-
-        function removeHiddenElements() {
-            var device = getDevice();
-
-
-            var classMap = {
-                desktop: 'elementor-hidden-desktop',
-                tablet: 'elementor-hidden-tablet',
-                phone: 'elementor-hidden-phone'
-            };
-
-            var hiddenClass = classMap[device];
-
-            if (!hiddenClass) return;
-
-
-            var elems = document.querySelectorAll('.' + hiddenClass);
-            elems.forEach(function(el) {
-                if (el && el.parentNode) {
-                    el.parentNode.removeChild(el);
-                }
-            });
-        }
-
-
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            removeHiddenElements();
-        } else {
-            window.addEventListener('DOMContentLoaded', removeHiddenElements);
-        }
-    })();
-    </script>
-    <?php
-}
-add_action('wp_footer', 'add_elementor_responsive_js');
-
-
-add_action('wp_head', function() {
-    ?>
-
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2024/06/Digi-Nofar-Bold-1-1.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2024/06/Aviny-2.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2024/05/Morabba-Black.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2024/05/Morabba-Bold.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2024/05/Morabba-Regular.ttf" as="font" type="font/ttf" crossorigin>
-
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWebFaNum_UltraLight.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWebFaNum_Medium.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWebFaNum_Light.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWebFaNum_Bold.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWebFaNum.ttf" as="font" type="font/ttf" crossorigin>
-
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_UltraLight.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_Medium.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_Light.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb_Bold.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="https://mid1.tamland.ir/wp-content/uploads/2022/09/IRANSansWeb.ttf" as="font" type="font/ttf" crossorigin>
-
-
-    <!--<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">-->
-    <?php
-});
-
-// تابع اصلی برای گرفتن پست تبلیغاتی مرتبط
+// گرفتن یک نوشته تبلیغاتی رندوم
 function get_current_related_ad_post() {
-    if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
-    if (function_exists('nocache_headers')) nocache_headers();
-
     static $ad_post = null;
 
     if ($ad_post !== null) {
@@ -3267,7 +2390,7 @@ function get_current_related_ad_post() {
     $post_id = get_the_ID();
     if (!$post_id) return null;
 
-    $terms_field = wp_get_post_terms($post_id, 'lesson', ['fields' => 'ids']);
+    $terms_field = wp_get_post_terms($post_id, 'field', ['fields' => 'ids']);
     $terms_grade = wp_get_post_terms($post_id, 'grade', ['fields' => 'ids']);
 
     if (empty($terms_field) && empty($terms_grade)) {
@@ -3281,7 +2404,7 @@ function get_current_related_ad_post() {
         'tax_query' => [
             'relation' => 'OR',
             [
-                'taxonomy' => 'lesson',
+                'taxonomy' => 'field',
                 'field' => 'term_id',
                 'terms' => $terms_field,
             ],
@@ -3313,115 +2436,3 @@ function get_related_ad_page_link_func() {
     return esc_url($page_link ?: '#');
 }
 add_shortcode('get_related_ad_link', 'get_related_ad_page_link_func');
-
-add_action('wp_footer', 'add_yektanet_script_to_footer');
-function add_yektanet_script_to_footer() {
-    if (is_page('course-checkout')) {
-        ?>
-        <script async>
-            !function (t, e, n) {
-                t.yektanetAnalyticsObject = n, t[n] = t[n] || function () {
-                    t[n].q.push(arguments)
-                }, t[n].q = t[n].q || [];
-                var a = new Date, r = a.getFullYear().toString() + "0" + a.getMonth() + "0" + a.getDate() + "0" + a.getHours(),
-                    c = e.getElementsByTagName("script")[0], s = e.createElement("script");
-                s.id = "ua-script-DSLcJKBG"; s.dataset.analyticsobject = n;
-                s.async = 1; s.type = "text/javascript";
-                s.src = "https://cdn.yektanet.com/rg_woebegone/scripts_v3/DSLcJKBG/rg.complete.js?v=" + r, c.parentNode.insertBefore(s, c)
-            }(window, document, "yektanet");
-        </script>
-        <?php
-    }
-}
-
-function conditional_compression() {
-    if (is_page('course-checkout') || is_page('return-payment-gateway')) {
-        // CSS Compression
-        if (!is_admin()) {
-            function compress_css($buffer) {
-                $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
-                $buffer = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $buffer);
-                return $buffer;
-            }
-            ob_start("compress_css");
-        }
-        
-        // JS Compression
-        add_filter('script_loader_tag', function($tag, $handle) {
-            if (is_admin()) return $tag;
-            return str_replace(" src", " defer src", $tag);
-        }, 10, 2);
-    }
-}
-//add_action('template_redirect', 'conditional_compression');
-/*
-add_filter('pre_http_request', function($pre, $args, $url) {
-    error_log("🔍 Request to: " . $url);
-    return false;
-}, 10, 3);
-add_filter('pre_http_request', 'tamland_block_external_requests_with_logging', 10, 3);
-
-function tamland_block_external_requests_with_logging($pre, $parsed_args, $url) {
-    // دامین فعلی سایت
-    $site_domain = $_SERVER['SERVER_NAME'];
-
-    // لیست دامنه‌های مجاز
-    $allowed_domains = [
-        $site_domain,
-        'localhost',
-        '127.0.0.1',
-        '*.tamland.ir*',
-        '*.shaparak.ir*',
-        'mid1.tamland.ir/wp-cron.php', // مستثنا کردن wp-cron.php
-    ];
-
-    // چک کردن آیا این URL در لیست مجاز هست
-    $allowed = false;
-    foreach ($allowed_domains as $allowed_domain) {
-        if (strpos($url, $allowed_domain) !== false) {
-            $allowed = true;
-            break;
-        }
-    }
-
-    // اگر مجاز نیست، لاگ و بلاک کن
-    if (!$allowed) {
-        $log_message = date('Y-m-d H:i:s') . " ❌ Blocked external request to: $url\n";
-        error_log($log_message, 3, WP_CONTENT_DIR . '/tamland-blocked-requests.log');
-
-        return new WP_Error('external_request_blocked', __('External requests are blocked.'));
-    }
-
-    // ادامه بده، مشکلی نیست
-    return false;
-}
-
-add_action('plugins_loaded', function () {
-    load_plugin_textdomain('wpsh', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-});
-
-add_filter('xmlrpc_enabled', '__return_false');
-add_filter('rest_authentication_errors', function($result) {
-    if (!is_user_logged_in()) {
-        return new WP_Error('rest_forbidden', 'REST API restricted.', array('status' => 403));
-    }
-    return $result;
-});
-*/
-function aparat_video_shortcode($atts) {
-    if (function_exists('get_field')) {
-        $video_id = get_field('course-preview-pack'); 
-    } elseif (function_exists('get_post_meta')) {
-        $video_id = get_post_meta(get_the_ID(), 'course-preview-pack', true);
-    }
-    
-    if (!empty($video_id)) {
-        return '<div class="aparat-video-wrapper">
-                    <iframe src="https://www.aparat.com/video/video/embed/videohash/' . esc_attr($video_id) . '/vt/frame" 
-                            style="border-radius: 15px;" width="640" height="190" allowfullscreen></iframe>
-                </div>';
-    }
-    
-    return '';
-}
-add_shortcode('aparat_player', 'aparat_video_shortcode');
