@@ -24,9 +24,11 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+    
+    
 
-<link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/litespeed/css/c2b34e4d5e39f87dbcdcf96db9dfb992.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://tizhooshan.tamland.ir/wp-content/litespeed/css/c2b34e4d5e39f87dbcdcf96db9dfb992.css"></noscript>
+<!--<link rel="preload" href="https://tizhooshan.tamland.ir/wp-content/litespeed/css/c2b34e4d5e39f87dbcdcf96db9dfb992.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://tizhooshan.tamland.ir/wp-content/litespeed/css/c2b34e4d5e39f87dbcdcf96db9dfb992.css"></noscript>-->
 
 <script>
 (function () {
