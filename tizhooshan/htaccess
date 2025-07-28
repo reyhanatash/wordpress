@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 # BEGIN All In One WP Security
 #AIOWPS_BASIC_HTACCESS_RULES_START
 <Files .htaccess>
@@ -183,11 +180,7 @@ RewriteRule .* - [E=Cache-Control:vary=%{ENV:LSCACHE_VARY_VALUE}+ismobile]
 ### marker MOBILE end ###
 
 ### marker NOCACHE USER AGENTS start ###
-<<<<<<< HEAD
-RewriteCond %{HTTP_USER_AGENT} Google\ Page\ Speed\ Insights|Lighthouse [NC]
-=======
 RewriteCond %{HTTP_USER_AGENT} Googlebot|Bingbot|Slurp|DuckDuckBot|YandexBot [NC]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE USER AGENTS end ###
 
@@ -217,15 +210,6 @@ Header set Link "</wp-content/themes/hello-theme-child-master/main.js>; rel=prel
 
 # فشرده‌سازی Gzip و Brotli
 <IfModule mod_deflate.c>
-<<<<<<< HEAD
-AddOutputFilterByType DEFLATE text/plain text/css text/javascript application/javascript application/json image/svg+xml
-</IfModule>
-
-<IfModule mod_brotli.c>
-AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
-</IfModule>
-
-=======
 AddOutputFilterByType DEFLATE application/atom+xml application/rss+xml application/font-woff2 application/font-woff application/vnd.ms-fontobject font/ttf font/otf
 </IfModule>
 
@@ -233,8 +217,6 @@ AddOutputFilterByType DEFLATE application/atom+xml application/rss+xml applicati
 AddOutputFilterByType BROTLI_COMPRESS application/atom+xml application/rss+xml application/font-woff2 application/font-woff application/vnd.ms-fontobject font/ttf font/otf
 </IfModule>
 
-
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 # جلوگیری از اجرای فایل‌های PHP در wp-content/uploads
 <Directory "/wp-content/uploads/">
 <FilesMatch "\.php$">
@@ -249,16 +231,12 @@ Order Allow,Deny
 Deny from all
 </FilesMatch>
 
-<<<<<<< HEAD
-=======
 <FilesMatch "\.(mp4)$">
-    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    Header set Pragma "no-cache"
-    Header set Expires 0
+Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+Header set Pragma "no-cache"
+Header set Expires 0
 </FilesMatch>
 
-
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 # جلوگیری از هات‌لینکینگ تصاویر
 <IfModule mod_rewrite.c>
 RewriteEngine on
@@ -267,8 +245,6 @@ RewriteCond %{HTTP_REFERER} !^https://(www\.)?tizhooshan.tamland\.ir [NC]
 RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [F,NC]
 </IfModule>
 
-<<<<<<< HEAD
-=======
 <IfModule mod_headers.c>
 Header always set Link "</wp-content/themes/hello-theme-child-master/style.css>; rel=preload; as=style; type='text/css'" env=REDIRECT_STATUS
 Header always set Link "</wp-content/themes/hello-theme-child-master/assets/css/bootstrap-utilities.min.css>; rel=preload; as=style; type='text/css'" env=REDIRECT_STATUS
@@ -276,10 +252,6 @@ Header always set Link "</wp-content/themes/hello-theme-child-master/assets/img/
 Header always set Link "</wp-content/themes/hello-theme-child-master/main.js>; rel=preload; as=script; type='application/javascript'" env=REDIRECT_STATUS
 </IfModule>
 
-
-
-
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 # جلوگیری از روش‌های خطرناک درخواست
 <IfModule mod_rewrite.c>
 RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
@@ -320,15 +292,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 # END WordPress
 
 # php -- BEGIN cPanel-generated handler, do not edit
 # Set the “ea-php74” package as the default “PHP” programming language.
 <IfModule mime_module>
-  AddHandler application/x-httpd-ea-php74 .php .php7 .phtml
+AddHandler application/x-httpd-ea-php74 .php .php7 .phtml
 </IfModule>
 # php -- END cPanel-generated handler, do not edit

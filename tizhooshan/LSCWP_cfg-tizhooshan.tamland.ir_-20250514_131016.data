@@ -36,11 +36,7 @@
 
 ["cache-browser",true]
 
-<<<<<<< HEAD
-["cache-exc_useragents",["Google Page Speed Insights","Lighthouse"]]
-=======
 ["cache-exc_useragents",["Googlebot","Bingbot","Slurp","DuckDuckBot","YandexBot"]]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["cache-exc_cookies",[]]
 
@@ -56,11 +52,7 @@
 
 ["cache-priv_uri",[]]
 
-<<<<<<< HEAD
-["cache-exc",["\/all-teachers\/","https:\/\/api.tamland.ir\/api\/course\/freeClassList\/-1\/2","\/wp-admin","\/vorood"]]
-=======
 ["cache-exc",["\/all-teachers\/","https:\/\/api.tamland.ir\/api\/course\/freeClassList\/-1\/2","\/wp-admin","\/vorood","first-session-video\/test-2\/","\/first-session-video\/","^\/first-session-video\/.*"]]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["cache-exc_roles",["administrator"]]
 
@@ -120,11 +112,7 @@
 
 ["purge-hook_all",["switch_theme","wp_create_nav_menu","wp_update_nav_menu","wp_delete_nav_menu","create_term","edit_terms","delete_term","add_link","edit_link","delete_link"]]
 
-<<<<<<< HEAD
-["esi",false]
-=======
 ["esi",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["esi-cache_admbar",false]
 
@@ -164,27 +152,12 @@
 
 ["optm-css_comb_ext_inl",true]
 
-<<<<<<< HEAD
-["optm-ucss",false]
-=======
 ["optm-ucss",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["optm-ucss_inline",true]
 
 ["optm-ucss_whitelist",[]]
 
-<<<<<<< HEAD
-["optm-ucss_file_exc_inline",[]]
-
-["optm-ucss_exc",[]]
-
-["optm-css_exc",[]]
-
-["optm-js_min",true]
-
-["optm-js_comb",true]
-=======
 ["optm-ucss_file_exc_inline",["https:\/\/tizhooshan.tamland.ir\/wp-content\/litespeed\/css\/c2b34e4d5e39f87dbcdcf96db9dfb992.css","https:\/\/tizhooshan.tamland.ir\/wp-content\/litespeed\/css\/72d7697c94110dc96845919d128b62fa.css"]]
 
 ["optm-ucss_exc",[]]
@@ -194,7 +167,6 @@
 ["optm-js_min",true]
 
 ["optm-js_comb",false]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["optm-js_comb_ext_inl",true]
 
@@ -214,11 +186,7 @@
 
 ["optm-css_async",true]
 
-<<<<<<< HEAD
-["optm-ccss_per_url",false]
-=======
 ["optm-ccss_per_url",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["optm-ccss_sep_posttype",["page"]]
 
@@ -254,11 +222,7 @@
 
 ["optm-guest_only",true]
 
-<<<<<<< HEAD
-["object",false]
-=======
 ["object",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["object-kind",false]
 
@@ -290,11 +254,7 @@
 
 ["discuss-avatar_cache_ttl",604800]
 
-<<<<<<< HEAD
-["optm-localize",false]
-=======
 ["optm-localize",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["optm-localize_domains",["### Popular scripts ###","https:\/\/platform.twitter.com\/widgets.js","https:\/\/connect.facebook.net\/en_US\/fbevents.js"]]
 
@@ -322,11 +282,7 @@
 
 ["media-add_missing_sizes",true]
 
-<<<<<<< HEAD
-["media-lazy_exc",["\/wp-content\/uploads\/2022\/09\/Logo-min-150x43.png","\/wp-content\/uploads\/2025\/04\/03.png","\/wp-content\/uploads\/2025\/04\/04.png","\/wp-content\/uploads\/2025\/04\/Artboard-1-1.png","\/wp-content\/uploads\/2025\/04\/Artboard-1-copy-2.png","\/wp-content\/uploads\/2025\/04\/Artboard-1-copy-3-2.png","\/wp-content\/uploads\/2025\/04\/Artboard-1-copy.png","\/wp-content\/uploads\/2025\/05\/01.webp","\/wp-content\/uploads\/2025\/05\/02.webp","\/wp-content\/uploads\/2025\/03\/Baner-1-1262x395-1.webp","\/wp-content\/uploads\/2025\/02\/1.webp","\/wp-content\/uploads\/2024\/10\/web.webp","\/wp-content\/uploads\/2025\/03\/Artboard-1-8-2.png","\/wp-content\/uploads\/2025\/04\/32.png","\/wp-content\/uploads\/2025\/03\/%D8%AA%D9%88%D9%85%D8%A7%D9%86.png","\/wp-content\/uploads\/2025\/03\/bctd.webp","\/wp-content\/uploads\/2023\/11\/Group-52370-2.webp","\/wp-content\/uploads\/2025\/04\/tiz.webp"]]
-=======
 ["media-lazy_exc",["\/wp-content\/uploads\/2025\/05\/\u0647\u0645\u0627\u06cc\u0634-\u062c\u0645\u0639-\u0628\u0646\u062f\u06cc-\u062a\u06cc\u0632\u0647\u0648\u0634\u0627\u0646.webp","\/wp-content\/uploads\/2025\/05\/01.webp"]]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4
 
 ["media-lazy_cls_exc",["wmu-preview-img"]]
 
@@ -414,8 +370,4 @@
 
 ["qc-cname",""]
 
-<<<<<<< HEAD
 ["_cache",true]
-=======
-["_cache",true]
->>>>>>> cb98cdc711d2ea53ba0421fa77901203fc804fe4

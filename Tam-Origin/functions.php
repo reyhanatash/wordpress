@@ -13,18 +13,19 @@
  */
 define( 'CHILD_THEME_ASTRA_CHILD_VERSION', '1.0.2' );
 
+$secret_key = defined('TAMLAND_PURCHASE_SECTRET_KEY') ? TAMLAND_PURCHASE_SECTRET_KEY : '';
+
 /**
  * Enqueue styles
  */
 function child_enqueue_styles() {
-    
     wp_enqueue_style( 'bootstrap', get_stylesheet_directory_uri(). '/assets/css/bootstrap.min.css' );
     wp_enqueue_style( 'bootstrap-rtl', get_stylesheet_directory_uri(). '/assets/css/bootstrap.rtl.min.css' );
     wp_enqueue_style( 'bootstrap-utilities', get_stylesheet_directory_uri(). '/assets/css/bootstrap-utilities.min.css' );
     wp_enqueue_style( 'bootstrap-utilities-rtl', get_stylesheet_directory_uri(). '/assets/css/bootstrap-utilities.rtl.min.css' );
     wp_enqueue_style( 'owl-carousel', get_stylesheet_directory_uri(). '/assets/css/owl.carousel.min.css' );
 	wp_enqueue_style( 'kc-fab', get_stylesheet_directory_uri(). '/assets/css/kc.fab.css' );
-	wp_enqueue_style( 'astra-child-theme-css', get_stylesheet_directory_uri() . '/style.css', array('astra-theme-css'), '2.8.33', 'all' );
+	wp_enqueue_style( 'astra-child-theme-css', get_stylesheet_directory_uri() . '/style.css', array('astra-theme-css'), '2.8.35', 'all' );
 	
 	wp_enqueue_script( 'bootstrap', get_stylesheet_directory_uri(). '/assets/js/bootstrap.min.js' , array(), '5.3.2', true );
 	wp_enqueue_script( 'owl-carousel', get_stylesheet_directory_uri(). '/assets/js/owl.carousel.min.js' , array(), '2.3.4', true );
@@ -266,6 +267,8 @@ function teacher_landing_current_courses_func(){
                 }elseif($course['course-type'] == 'course-pack'){
                     $course_type = 'بسته';
                 }
+                
+                $token = hash_hmac('sha256', $course['course_id_lms'] . '|' . $course['price_tax'], $secret_key);
             ?>
                 <div class="col-12 col-md-6 col-lg-3 mb-3">
                     <div class="teacher-landing-current-courses-card">
@@ -281,6 +284,7 @@ function teacher_landing_current_courses_func(){
                                     <input type="hidden" name="course_name_0" value="<?php echo esc_attr(str_replace("|", "-", $course['teacher-current-courses-title'] . ' ' . $course['secound-title'] . ' ' . get_the_title())); ?>">
                                     <input type="hidden" name="course_price_0" value="<?php echo esc_attr($course['price_tax']); ?>">
                                     <input type="hidden" name="course_numbers" value="1">
+                                    <input type="hidden" name="secure_token" value="<?= $token ?>">
                                 </form>
                             </div>
                         <?php endif; ?>
@@ -297,6 +301,7 @@ function teacher_landing_current_courses_func(){
                                     <input type="hidden" name="course_name_0" value="<?php echo esc_attr(str_replace("|", "-", $course['teacher-current-courses-title'] . ' ' . $course['secound-title'] . ' ' . get_the_title())); ?>">
                                     <input type="hidden" name="course_price_0" value="<?php echo esc_attr($course['price_tax']); ?>">
                                     <input type="hidden" name="course_numbers" value="1">
+                                    <input type="hidden" name="secure_token" value="<?= $token ?>">
                                 </form>
                             <?php endif; ?>
 
@@ -319,6 +324,12 @@ function teacher_landing_current_courses_func(){
                                             <input type="hidden" name="course_name_0" value="<?php echo esc_attr(str_replace("|", "-", $course['teacher-current-courses-title'] . ' ' . $course['secound-title'] . ' ' . get_the_title())); ?>">
                                             <input type="hidden" name="course_price_0" value="<?php echo esc_attr($course['price_tax']); ?>">
                                             <input type="hidden" name="course_numbers" value="1">
+                                            <input type="hidden" name="utm_source" value="<?php echo htmlspecialchars($_GET['utm_source'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_medium" value="<?php echo htmlspecialchars($_GET['utm_medium'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_campaign" value="<?php echo htmlspecialchars($_GET['utm_campaign'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_term" value="<?php echo htmlspecialchars($_GET['utm_term'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_content" value="<?php echo htmlspecialchars($_GET['utm_content'] ?? ''); ?>">
+                                            <input type="hidden" name="secure_token" value="<?= $token ?>">
                                         </form>
                                     </div>
                                     <?php endif; ?>
@@ -361,7 +372,7 @@ add_shortcode('teacher_current_courses','teacher_current_courses_func');
 function teacher_current_courses_func() {
     $teacher_current_courses = get_post_meta(get_the_ID(), 'teacher-current-courses', true);
     if (!$teacher_current_courses) return;  // اطمینان از وجود داده‌ها
-
+    
     ?>
     <div class="teacher-current-courses-place container-fluid">
         <div class="row" id="teacher-current-courses">
@@ -373,6 +384,7 @@ function teacher_current_courses_func() {
                 }elseif($course['course-type'] == 'course-pack'){
                     $course_type = 'بسته';
                 }
+                $token = hash_hmac('sha256', $course['course_id_lms'] . '|' . $course['price_tax'], $secret_key);
             ?>
                 <div class="col-6 col-md-4 col-lg-3 mb-3">
                     <div class="teacher-current-courses-card">
@@ -408,6 +420,7 @@ function teacher_current_courses_func() {
                                     <input type="hidden" name="course_name_0" value="<?php echo esc_attr(str_replace("|", "-", $course['teacher-current-courses-title'] . ' ' . $course['secound-title'] . ' ' . get_the_title())); ?>">
                                     <input type="hidden" name="course_price_0" value="<?php echo esc_attr($course['price_tax']); ?>">
                                     <input type="hidden" name="course_numbers" value="1">
+                                    <input type="hidden" name="secure_token" value="<?= $token ?>">
                                 </form>
                             <?php endif; ?>
 
@@ -430,6 +443,12 @@ function teacher_current_courses_func() {
                                             <input type="hidden" name="course_name_0" value="<?php echo esc_attr(str_replace("|", "-", $course['teacher-current-courses-title'] . ' ' . $course['secound-title'] . ' ' . get_the_title())); ?>">
                                             <input type="hidden" name="course_price_0" value="<?php echo esc_attr($course['price_tax']); ?>">
                                             <input type="hidden" name="course_numbers" value="1">
+                                            <input type="hidden" name="utm_source" value="<?php echo htmlspecialchars($_GET['utm_source'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_medium" value="<?php echo htmlspecialchars($_GET['utm_medium'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_campaign" value="<?php echo htmlspecialchars($_GET['utm_campaign'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_term" value="<?php echo htmlspecialchars($_GET['utm_term'] ?? ''); ?>">
+                                            <input type="hidden" name="utm_content" value="<?php echo htmlspecialchars($_GET['utm_content'] ?? ''); ?>">
+                                            <input type="hidden" name="secure_token" value="<?= $token ?>">
                                         </form>
                                     </div>
                                     <?php endif; ?>
@@ -899,6 +918,50 @@ function unset_url_field($fields){
     return $fields;
 }
 
+function change_comment_form_email_to_mobile($fields) {
+    // Remove the default email field
+    unset($fields['email']);
+
+    // Add a mobile field instead
+    $fields['mobile'] = '<p class="comment-form-mobile ast-grid-common-col ast-width-lg-33 ast-width-md-4 ast-float">
+        <label for="mobile" class="screen-reader-text">شماره موبایل <span class="required">*</span></label>
+        <input id="mobile" name="mobile" type="text" value="" size="30" maxlength="11" required placeholder="شماره موبایل"/>
+    </p>
+    <style>
+    #mobile{
+        border-radius: 8px;
+        border: 1px solid #c9d4dd;
+        background-color: #fff;
+    }
+    </style>
+    ';
+
+    return $fields;
+}
+add_filter('comment_form_default_fields', 'change_comment_form_email_to_mobile');
+
+function save_mobile_field_with_comment($comment_id) {
+    if (isset($_POST['mobile'])) {
+        $mobile = sanitize_text_field($_POST['mobile']);
+        add_comment_meta($comment_id, 'mobile', $mobile);
+    }
+}
+add_action('comment_post', 'save_mobile_field_with_comment');
+
+function append_mobile_to_comment_text($comment_text, $comment) {
+    //if (is_admin()) return $comment_text; // Don't show in admin list view
+
+    if (is_admin()) {
+        $mobile = get_comment_meta($comment->comment_ID, 'mobile', true);
+        if ($mobile) {
+            $comment_text .= '<p><strong>شماره موبایل:</strong> ' . esc_html($mobile) . '</p>';
+        }
+    }
+
+    return $comment_text;
+}
+add_filter('comment_text', 'append_mobile_to_comment_text', 10, 2);
+
 
 add_filter('mime_types', 'dd_add_jfif_files');
 function dd_add_jfif_files($mimes){
@@ -988,7 +1051,7 @@ function google_analytics_code() {
     <!-- End Google Optimize -->
     <?php
 }
-add_action('wp_head', 'google_analytics_code', 10);
+//add_action('wp_head', 'google_analytics_code', 10);
 
 function after_body_mine(){
     ?>
@@ -998,7 +1061,7 @@ function after_body_mine(){
     <!-- End Google Tag Manager (noscript) -->
     <?php
 }
-add_action('after_body', 'after_body_mine');
+//add_action('after_body', 'after_body_mine');
 
 function sa_clarity(){
     ?>
@@ -1031,7 +1094,7 @@ function add_lazy_load_to_videos($content) {
 add_filter('the_content', 'add_lazy_load_to_videos');
 
 
-add_filter( 'rest_authentication_errors', function( $result ) {
+/*add_filter( 'rest_authentication_errors', function( $result ) {
     // If a previous authentication check was applied,
     // pass that result along without modification.
     if ( true === $result || is_wp_error( $result ) ) {
@@ -1052,7 +1115,7 @@ add_filter( 'rest_authentication_errors', function( $result ) {
     // on logged-in requests
     return $result;
 });
-
+*/
 class CourseUpdater {
 
     public function __construct() {
@@ -1511,18 +1574,18 @@ function hero_section_func(){
 				<div class="part part-7-2">
 					<div class="part part-7-2-1" data-href="https://mid1.tamland.ir/">
 							<img 
-							  src="https://tamland.ir/wp-content/uploads/2024/06/4k-1@72x-80.webp"
+							  src="https://tamland.ir/wp-content/uploads/2025/07/desktop.webp"
 							  srcset="
-								https://tamland.ir/wp-content/uploads/2024/06/4k-1@72x-80.webp 1280w,
-								https://tamland.ir/wp-content/uploads/2024/06/4k-1@72x-80.webp 1920w"
+                              https://tamland.ir/wp-content/uploads/2024/07/desktop.webp 1280w,
+                              https://tamland.ir/wp-content/uploads/2024/07/desktop.webp 1920w"
 							  sizes="
 								(max-width: 1280px) 1280px,
 								1920px"
 							  width="1268" 
 							  height="94" 
 							  class="part-img-back" 
-							  title="پنجمی‌ها و ششمی‌ها، دبستان" 
-							  alt="پنجمی‌ها و ششمی‌ها، دبستان" 
+							  title="چهارمی‌ها و ششمی‌ها، دبستان" 
+							  alt="چهارمی‌ها و ششمی‌ها، دبستان" 
 							  width="100%" height="auto" 
 							  fetchpriority="high" 
 							  decoding="defer"
@@ -1553,8 +1616,8 @@ function hero_section_func(){
 							<img 
 							  src="https://tamland.ir/wp-content/uploads/2024/08/1920-10-copy@72x-80.webp"
 							  srcset="
-								https://tamland.ir/wp-content/uploads/2024/08/1920-10-copy@72x-80.webp 1280w,
-								https://tamland.ir/wp-content/uploads/2024/08/1920-10-copy@72x-80.webp 1920w"
+                              https://tamland.ir/wp-content/uploads/2024/07/desktop.webp 1280w,
+                              https://tamland.ir/wp-content/uploads/2024/07/desktop.webp 1920w"
 							  sizes="
 								(max-width: 1280px) 1280px,
 								1920px"
@@ -2287,3 +2350,401 @@ function hero_section_duplicate_func(){
 </style>
 <?php
 }
+
+
+/**
+ * Shortcode: [ads_slide_banner_single_post] 
+*/
+add_shortcode('ads_slide_banner_single_post','ads_slide_banner_single_post_func');
+function ads_slide_banner_single_post_func(){
+    // گرفتن دسته‌بندی پست جاری
+    $categories = get_the_category();
+    
+    if (!empty($categories)) {
+        // گرفتن اولین دسته‌بندی (در صورت وجود چند دسته‌بندی)
+        $category_id = $categories[0]->term_id;
+    
+        // گرفتن فیلد Repeater برای دسته‌بندی
+        $ads_banner = get_term_meta($category_id, 'ads-banner', true);
+    
+        if (!empty($ads_banner)) {
+            ?>
+            <div class="ads-slide-banner-single-post">
+                <div class="ads-slide-banner-single-post-wrapper d-flex align-items-center">
+                    <div class="ads-slide-banner-single-post-owl-next">
+                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.57812 11L6.57812 6L1.57812 1" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="owl-carousel" id="ads-slide-banner-single-post">
+                        <?php foreach ($ads_banner as $key => $banner): ?>
+                            <div>
+                                <div class="item-box">
+                                    <a href="<?php echo esc_url($banner['ads-link']); ?>" target="_blank">
+                                        <img src="<?php echo esc_url($banner['ads-image']); ?>" alt="<?php echo esc_attr($banner['ads-banner-title']); ?>">
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="ads-slide-banner-single-post-owl-prev">
+                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.4375 1L1.4375 6L6.4375 11" stroke="#2D3748" stroke-width="1.42857" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function(){
+                var $carousel = jQuery("#ads-slide-banner-single-post");
+
+                if($carousel.find('.owl-nav').hasClass('disabled')){
+                    jQuery('.ads-slide-banner-single-post-owl-next, .ads-slide-banner-single-post-owl-prev').addClass('d-none');
+                }
+
+                jQuery('.ads-slide-banner-single-post-owl-next').click(function(){
+                    $carousel.trigger('next.owl.carousel');
+                });
+
+                jQuery('.ads-slide-banner-single-post-owl-prev').click(function(){
+                    $carousel.trigger('prev.owl.carousel');
+                });
+
+                $carousel.owlCarousel({
+                    rtl:true,
+                    loop:true,
+                    margin:0,
+                    nav:true,
+                    dots:false,
+                    autoplay:true,
+                    responsiveClass:true,
+                    mouseDrag:true,
+                    responsive:{
+                        0: { items: 1 },
+                        600: { items: 1 },
+                        1000: { items: 1 }
+                    }
+                });
+            });
+        </script>
+        <?php
+    }
+    }
+}
+
+
+/**
+ * Shortcode: [ads_banner_betweentext_singlepost pos="0"] 
+*/
+add_shortcode('ads_banner_betweentext_singlepost', 'ads_banner_betweentext_singlepost_func');
+
+function ads_banner_betweentext_singlepost_func($atts) {
+    // گرفتن مقدار pos از پارامترهای شورت‌کد
+    $atts = shortcode_atts(array(
+        'pos' => 0,
+    ), $atts);
+
+    $pos = intval($atts['pos']);
+    
+    // گرفتن دسته‌بندی پست جاری
+    $categories = get_the_category();
+    
+    if (!empty($categories)) {
+        // گرفتن اولین دسته‌بندی
+        $category_id = $categories[0]->term_id;
+        
+        // گرفتن فیلد Repeater برای دسته‌بندی
+        // اگر از ACF استفاده می‌کنی:
+        // $ads_banner = get_field('ads-banner-between-text', 'category_' . $category_id);
+        
+        $ads_banner_between_text = get_term_meta($category_id, 'ads-banner-between-text', true);
+        
+        // بررسی اینکه مقدار pos موجود باشد
+        if (!empty($ads_banner_between_text)) {
+            $banner = $ads_banner_between_text['item-'.$pos];
+            ob_start(); // Start output buffering
+            if(!empty($banner)){
+            ?>
+            <div class="ads-banner-betweentext-singlepost d-block">
+                <a href="<?php if ( isset($banner['ads-link-between-text']) ) { echo esc_url($banner['ads-link-between-text']); } ?>" target="_blank">
+                    <img src="<?php if ( isset($banner['ads-image-between-text']) ) { echo esc_url($banner['ads-image-between-text']); } ?>" alt="<?php if ( isset($banner['ads-banner-between-text-title']) ) { echo esc_attr($banner['ads-banner-between-text-title']); } ?>">
+                </a>
+            </div>
+            <?php
+            }
+            return ob_get_clean(); // Return the buffered content
+        }
+    }
+
+    return ''; // در صورت نبودن مقدار معتبر، چیزی نمایش نده
+}
+
+add_filter('wp_img_tag_add_loading_attr', 'custom_disable_lazyload_on_parent_class', 10, 3);
+function custom_disable_lazyload_on_parent_class($value, $image, $context) {
+    // بررسی اگر تصویر کلاس lazy خاصی نداره، یا توی یک بلاک خاص قرار داره
+    if (
+        strpos($image, 'class="') !== false &&
+        (strpos($image, 'no-lazy') !== false || strpos($image, 'swiper-slide-bg') !== false)
+    ) {
+        return false;
+    }
+    return $value;
+}
+
+function get_estimated_reading_time($content = '', $wpm = 210) {
+    if (empty($content)) {
+        global $post;
+        $content = $post->post_content;
+    }
+
+    $clean_text = wp_strip_all_tags(strip_shortcodes($content));
+    $word_count = str_word_count($clean_text);
+    $minutes = ceil($word_count / $wpm);
+
+    return "<span class='reading-time'>Estimated reading time: {$minutes} min</span>";
+}
+
+add_shortcode('reading_time', function () {
+    return get_estimated_reading_time();
+});
+
+
+function enqueue_reading_time_script() {
+    ?>
+    <script>
+    function estimateReadingTimeByClass(className, wordsPerMinute = 210) {
+        const element = document.querySelector(`.${className}`);
+        if (!element) return;
+
+        const text = element.innerText || element.textContent || "";
+        const wordCount = text.trim().split(/\s+/).length;
+        const minutes = Math.ceil(wordCount / wordsPerMinute);
+
+        const readingTimeElement = document.createElement("p");
+        readingTimeElement.textContent = `Estimated reading time: ${minutes} min`;
+        readingTimeElement.className = "reading-time";
+
+        element.parentNode.insertBefore(readingTimeElement, element);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        estimateReadingTimeByClass("articleblog2");
+    });
+    </script>
+    <?php
+}
+
+add_shortcode('reading_time_js', function () {
+    add_action('wp_footer', 'enqueue_reading_time_script');
+    return '';
+});
+
+
+
+function tamland_preload_homepage_video() {
+  if ( is_front_page() ) {
+    echo '<link rel="preload" as="video" href="https://tamland.ir/wp-content/uploads/2024/08/IMG_3202.mp4" type="video/mp4">' . "\n";
+  }
+}
+add_action( 'wp_head', 'tamland_preload_homepage_video' );
+add_shortcode('get_related_ad_link', 'get_related_ad_page_link_func');
+
+
+// گرفتن یک نوشته تبلیغاتی رندوم
+function get_current_related_ad_post() {
+    static $ad_post = null;
+
+    if ($ad_post !== null) {
+        return $ad_post;
+    }
+
+    $post_id = get_the_ID();
+    if (!$post_id) return null;
+
+    $terms_field = wp_get_post_terms($post_id, 'field', ['fields' => 'ids']);
+    $terms_grade = wp_get_post_terms($post_id, 'publish-year', ['fields' => 'ids']);
+
+    if (empty($terms_field) && empty($terms_grade)) {
+        return null;
+    }
+
+    $args = [
+        'post_type' => 'ads',
+        'posts_per_page' => 1,
+        'orderby' => 'rand',
+        'tax_query' => [
+            'relation' => 'OR',
+            [
+                'taxonomy' => 'field',
+                'field' => 'term_id',
+                'terms' => $terms_field,
+            ],
+            [
+                'taxonomy' => 'publish-year',
+                'field' => 'term_id',
+                'terms' => $terms_grade,
+            ]
+        ]
+    ];
+
+    $ads = get_posts($args);
+    $ad_post = !empty($ads) ? $ads[0] : null;
+    return $ad_post;
+}
+
+// شورتکد برای لینک ویدیو تبلیغاتی
+function get_related_ad_video_func() {
+    $ad_post = get_current_related_ad_post();
+    $video_url = $ad_post ? get_post_meta($ad_post->ID, 'ad_video', true) : '';
+    return esc_url($video_url ?: '');
+}
+add_shortcode('get_related_ad_video', 'get_related_ad_video_func');
+
+// شورتکد برای لینک صفحه تبلیغاتی
+function get_related_ad_page_link_func() {
+    $ad_post = get_current_related_ad_post();
+    $page_link = $ad_post ? get_post_meta($ad_post->ID, 'ad_link', true) : '';
+    return esc_url($page_link ?: 'https://konkoor.tamland.ir');
+}
+add_shortcode('get_related_ad_link', 'get_related_ad_page_link_func');
+
+function tamland_check_email_and_post() {
+    // مشخصات ایمیل هاست
+    $hostname = '{mail.tamland.ir:993/imap/ssl}INBOX'; // دامنه خودت رو جایگزین کن
+    $username = 'sajadakbari@tamland.ir'; // ایمیل هاست
+    $password = 'Sajad@6477'; // رمز عبور ایمیل
+
+    // اتصال به سرور ایمیل
+    $inbox = imap_open($hostname, $username, $password) or die('Cannot connect to email server: ' . imap_last_error());
+
+    // فقط ایمیل‌های خوانده‌نشده
+    $emails = imap_search($inbox, 'UNSEEN');
+
+    if ($emails) {
+        rsort($emails); // از جدید به قدیم
+
+        foreach ($emails as $email_number) {
+            $overview = imap_fetch_overview($inbox, $email_number, 0);
+            $message = imap_fetchbody($inbox, $email_number, 1); // قسمت متنی
+
+            $title = isset($overview[0]->subject) ? $overview[0]->subject : 'بدون عنوان';
+            $content = trim($message);
+
+            // ایجاد پست جدید در دسته‌بندی خاص
+            $new_post = array(
+                'post_title'    => $title,
+                'post_content'  => $content,
+                'post_status'   => 'publish',
+                'post_author'   => 1,
+                'post_category' => array(5), // شناسه دسته موردنظر
+            );
+
+            wp_insert_post($new_post);
+
+            // علامت‌گذاری به‌عنوان خوانده‌شده
+            imap_setflag_full($inbox, $email_number, "\\Seen");
+        }
+    }
+
+    imap_close($inbox);
+}
+
+// ثبت کران جاب
+function tamland_schedule_email_check() {
+    if (!wp_next_scheduled('tamland_check_email_event')) {
+        wp_schedule_event(time(), 'hourly', 'tamland_check_email_event');
+    }
+}
+add_action('wp', 'tamland_schedule_email_check');
+
+// اتصال رویداد به تابع
+add_action('tamland_check_email_event', 'tamland_check_email_and_post');
+
+
+
+add_filter('woo_lucky_wheel_check_user_login', '__return_false');
+add_action('wp_ajax_send_contact_email', 'send_contact_email');
+add_action('wp_ajax_nopriv_send_contact_email', 'send_contact_email');
+
+add_action('wp_footer','duplicateemail_luckywheel');
+function duplicateemail_luckywheel(){
+    
+    ?>
+    <style>
+        input[type="email"]#emailField{
+            display:none;
+        }
+    </style>
+    <script>
+        jQuery(document).ready(function(){
+            // Get the text input and email input elements
+            const textField = document.getElementById('mobileField');
+            const emailField = document.getElementById('emailField');
+    
+            // Add an event listener to the text field for the 'input' event
+            textField.addEventListener('input', function() {
+                // Duplicate the value from the text field to the email field
+                emailField.value = textField.value+'@tamland.ir';
+            });
+        });
+    </script>
+    <?php
+}
+
+add_action('wp_footer', 'add_js_referrer');
+function add_js_referrer(){
+    ?>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.querySelector('.wc-lucky-wheel-shortcode-wheel-button-wrap');
+    const form = document.querySelector('.wc-lucky-wheel-shortcode-wheel-fields-container');
+  const refInput = document.createElement('input');
+  refInput.type = 'hidden';
+  refInput.name = 'lucky_wheel_referrer';
+  refInput.className = 'referrer-input';
+  form.appendChild(refInput);
+
+  refInput.value = window.location.href;
+});
+</script>
+
+    <?php
+}
+
+
+add_action( 'template_redirect', function() {
+    if ( !is_woocommerce() && !is_cart() && !is_checkout() ) {
+        remove_action( 'wp_head', array( $GLOBALS['woocommerce'], 'generator' ), 10 );
+        remove_all_actions( 'woocommerce_before_main_content' );
+        remove_all_actions( 'woocommerce_after_main_content' );
+        remove_all_actions( 'woocommerce_sidebar' );
+        remove_all_actions( 'woocommerce_before_shop_loop' );
+        remove_all_actions( 'woocommerce_after_shop_loop' );
+        remove_all_actions( 'woocommerce_before_single_product' );
+        remove_all_actions( 'woocommerce_after_single_product' );
+        remove_all_actions( 'woocommerce_cart_collaterals' );
+    }
+});
+add_filter('template_include', function($template) {
+    if ( !is_woocommerce() && !is_cart() && !is_checkout() ) {
+        if (strpos($template, 'woocommerce') !== false) {
+            return get_stylesheet_directory() . '/index.php';
+        }
+    }
+    return $template;
+}, 99);
+
+function add_najva_push_notification_script() {
+    ?>
+        <script>
+            var s=document.createElement("script");
+            s.src="https://van.najva.com/static/js/main-script.js";
+            s.defer=!0;
+            s.id="najva-mini-script";
+            s.setAttribute("data-najva-id","73d870e1-3a20-4e07-aa33-346b9c3fa6ad");
+            document.head.appendChild(s);
+        </script>
+    <?php
+    }
+    add_action('wp_head', 'add_najva_push_notification_script');

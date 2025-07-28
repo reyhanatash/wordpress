@@ -1250,7 +1250,7 @@ function teachers_course_items_func(){
                 };
             });
         </script>
-            <div class="container multiteacher my-5">
+            <div class="container multiteacher my-5" style="display:none">
                 <li class="multiteacher-courses-items">
                     <div class="row courses-wrapper align-items-start justify-content-center">
                         <div class="row justify-content-center" id="courseRow">
@@ -1554,6 +1554,8 @@ function teachers_course_items_func(){
                     jQuery("#teacher-"+teacherSelected).click();
                     document.getElementById("teacher-"+teacherSelected).scrollIntoView();
                 }
+                
+                jQuery('.container.multiteacher').fadeIn(500);
             }
         </script>
         <?php
@@ -2436,3 +2438,18 @@ function get_related_ad_page_link_func() {
     return esc_url($page_link ?: '#');
 }
 add_shortcode('get_related_ad_link', 'get_related_ad_page_link_func');
+
+// count words of short description of exam
+function count_chars_of_exam_short_desc() {
+    global $post;
+    if ( ! $post ) return 0;
+
+    $field_value = get_post_meta( $post->ID, 'exam-short-desc', true );
+    if ( ! $field_value ) return 0;
+
+    $clean_text = strip_tags( $field_value );
+    $char_count = strlen( trim( $clean_text ) );
+
+    return $char_count;
+}
+add_shortcode( 'exam_short_desc_char_count', 'count_chars_of_exam_short_desc' );
